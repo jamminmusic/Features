@@ -70,16 +70,18 @@ structure GetAuthUriResponse {
   // old fields the same, it should work. If you delete a field, don’t re-use the number.
   @n(0)
   @required
-  uri: String
+  success: Boolean
 
   /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
   @n(1)
   @required
-  success: Boolean
+  error: String
 
   @n(2)
+  @sensitive
   @required
-  error: String
+  uri: String
+
 }
 
 operation AuthorizeUser {

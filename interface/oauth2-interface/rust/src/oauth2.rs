@@ -365,9 +365,9 @@ pub fn decode_get_auth_uri_request(
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct GetAuthUriResponse {
+    /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default)]
     pub error: String,
-    /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default)]
     pub success: bool,
     #[serde(default)]
