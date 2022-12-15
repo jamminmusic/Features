@@ -4,7 +4,8 @@
 sequenceDiagram
     %% Actors
     participant Client
-    participant Oauth2Actor
+    participant Oauth2Actor[http/nats]
+    
     participant Oauth2Provider
     participant AuthCache
     participant ngs
