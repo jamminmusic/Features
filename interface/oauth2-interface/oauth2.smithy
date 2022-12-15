@@ -116,7 +116,6 @@ structure AuthorizeUserRequest {
   @required
   auth_code: String
 
-  /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
   // state returned with auth_code
   @n(3)
   @sensitive

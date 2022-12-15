@@ -24,12 +24,17 @@ pub const SMITHY_VERSION: &str = "1.0";
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AuthorizeUserRequest {
+    #[serde(default)]
+    pub auth_code: String,
+    #[serde(default)]
+    pub csrf_state: String,
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
-    #[serde(rename = "grantType")]
     #[serde(default)]
     pub grant_type: String,
     #[serde(default)]
     pub provider: String,
+    #[serde(default)]
+    pub state: String,
 }
 
 // Encode AuthorizeUserRequest as CBOR and append to output stream
@@ -42,11 +47,17 @@ pub fn encode_authorize_user_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.map(2)?;
-    e.str("grantType")?;
+    e.map(5)?;
+    e.str("auth_code")?;
+    e.str(&val.auth_code)?;
+    e.str("csrf_state")?;
+    e.str(&val.csrf_state)?;
+    e.str("grant_type")?;
     e.str(&val.grant_type)?;
     e.str("provider")?;
     e.str(&val.provider)?;
+    e.str("state")?;
+    e.str(&val.state)?;
     Ok(())
 }
 
@@ -56,8 +67,11 @@ pub fn decode_authorize_user_request(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
 ) -> Result<AuthorizeUserRequest, RpcError> {
     let __result = {
+        let mut auth_code: Option<String> = None;
+        let mut csrf_state: Option<String> = None;
         let mut grant_type: Option<String> = None;
         let mut provider: Option<String> = None;
+        let mut state: Option<String> = None;
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -72,8 +86,11 @@ pub fn decode_authorize_user_request(
             let len = d.fixed_array()?;
             for __i in 0..(len as usize) {
                 match __i {
-                    0 => grant_type = Some(d.str()?.to_string()),
-                    1 => provider = Some(d.str()?.to_string()),
+                    0 => auth_code = Some(d.str()?.to_string()),
+                    1 => csrf_state = Some(d.str()?.to_string()),
+                    2 => grant_type = Some(d.str()?.to_string()),
+                    3 => provider = Some(d.str()?.to_string()),
+                    4 => state = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -81,18 +98,37 @@ pub fn decode_authorize_user_request(
             let len = d.fixed_map()?;
             for __i in 0..(len as usize) {
                 match d.str()? {
-                    "grantType" => grant_type = Some(d.str()?.to_string()),
+                    "auth_code" => auth_code = Some(d.str()?.to_string()),
+                    "csrf_state" => csrf_state = Some(d.str()?.to_string()),
+                    "grant_type" => grant_type = Some(d.str()?.to_string()),
                     "provider" => provider = Some(d.str()?.to_string()),
+                    "state" => state = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
         }
         AuthorizeUserRequest {
+            auth_code: if let Some(__x) = auth_code {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field AuthorizeUserRequest.auth_code (#0)".to_string(),
+                ));
+            },
+
+            csrf_state: if let Some(__x) = csrf_state {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field AuthorizeUserRequest.csrf_state (#1)".to_string(),
+                ));
+            },
+
             grant_type: if let Some(__x) = grant_type {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserRequest.grant_type (#0)".to_string(),
+                    "missing field AuthorizeUserRequest.grant_type (#2)".to_string(),
                 ));
             },
 
@@ -100,7 +136,15 @@ pub fn decode_authorize_user_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserRequest.provider (#1)".to_string(),
+                    "missing field AuthorizeUserRequest.provider (#3)".to_string(),
+                ));
+            },
+
+            state: if let Some(__x) = state {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field AuthorizeUserRequest.state (#4)".to_string(),
                 ));
             },
         }
@@ -115,6 +159,8 @@ pub struct AuthorizeUserResponse {
     /// indication whether the request was successful
     #[serde(default)]
     pub success: bool,
+    #[serde(default)]
+    pub token: String,
 }
 
 // Encode AuthorizeUserResponse as CBOR and append to output stream
@@ -127,7 +173,7 @@ pub fn encode_authorize_user_response<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.map(2)?;
+    e.map(3)?;
     if let Some(val) = val.error.as_ref() {
         e.str("error")?;
         e.str(val)?;
@@ -136,6 +182,8 @@ where
     }
     e.str("success")?;
     e.bool(val.success)?;
+    e.str("token")?;
+    e.str(&val.token)?;
     Ok(())
 }
 
@@ -147,6 +195,7 @@ pub fn decode_authorize_user_response(
     let __result = {
         let mut error: Option<Option<String>> = Some(None);
         let mut success: Option<bool> = None;
+        let mut token: Option<String> = None;
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -170,6 +219,7 @@ pub fn decode_authorize_user_response(
                         }
                     }
                     1 => success = Some(d.bool()?),
+                    2 => token = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -186,6 +236,7 @@ pub fn decode_authorize_user_response(
                         }
                     }
                     "success" => success = Some(d.bool()?),
+                    "token" => token = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -198,6 +249,14 @@ pub fn decode_authorize_user_response(
             } else {
                 return Err(RpcError::Deser(
                     "missing field AuthorizeUserResponse.success (#1)".to_string(),
+                ));
+            },
+
+            token: if let Some(__x) = token {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field AuthorizeUserResponse.token (#2)".to_string(),
                 ));
             },
         }
@@ -218,6 +277,8 @@ pub struct GetAuthUriRequest {
     #[serde(default)]
     pub provider: String,
     #[serde(default)]
+    pub redirect_url: String,
+    #[serde(default)]
     pub scope: String,
     #[serde(default)]
     pub token_url: String,
@@ -233,7 +294,7 @@ pub fn encode_get_auth_uri_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.map(7)?;
+    e.map(8)?;
     e.str("auth_url")?;
     e.str(&val.auth_url)?;
     e.str("client_id")?;
@@ -244,6 +305,8 @@ where
     e.str(&val.grant_type)?;
     e.str("provider")?;
     e.str(&val.provider)?;
+    e.str("redirect_url")?;
+    e.str(&val.redirect_url)?;
     e.str("scope")?;
     e.str(&val.scope)?;
     e.str("token_url")?;
@@ -262,6 +325,7 @@ pub fn decode_get_auth_uri_request(
         let mut client_secret: Option<String> = None;
         let mut grant_type: Option<String> = None;
         let mut provider: Option<String> = None;
+        let mut redirect_url: Option<String> = None;
         let mut scope: Option<String> = None;
         let mut token_url: Option<String> = None;
 
@@ -283,8 +347,9 @@ pub fn decode_get_auth_uri_request(
                     2 => client_secret = Some(d.str()?.to_string()),
                     3 => grant_type = Some(d.str()?.to_string()),
                     4 => provider = Some(d.str()?.to_string()),
-                    5 => scope = Some(d.str()?.to_string()),
-                    6 => token_url = Some(d.str()?.to_string()),
+                    5 => redirect_url = Some(d.str()?.to_string()),
+                    6 => scope = Some(d.str()?.to_string()),
+                    7 => token_url = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -297,6 +362,7 @@ pub fn decode_get_auth_uri_request(
                     "client_secret" => client_secret = Some(d.str()?.to_string()),
                     "grant_type" => grant_type = Some(d.str()?.to_string()),
                     "provider" => provider = Some(d.str()?.to_string()),
+                    "redirect_url" => redirect_url = Some(d.str()?.to_string()),
                     "scope" => scope = Some(d.str()?.to_string()),
                     "token_url" => token_url = Some(d.str()?.to_string()),
                     _ => d.skip()?,
@@ -344,11 +410,19 @@ pub fn decode_get_auth_uri_request(
                 ));
             },
 
+            redirect_url: if let Some(__x) = redirect_url {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.redirect_url (#5)".to_string(),
+                ));
+            },
+
             scope: if let Some(__x) = scope {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.scope (#5)".to_string(),
+                    "missing field GetAuthUriRequest.scope (#6)".to_string(),
                 ));
             },
 
@@ -356,7 +430,7 @@ pub fn decode_get_auth_uri_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.token_url (#6)".to_string(),
+                    "missing field GetAuthUriRequest.token_url (#7)".to_string(),
                 ));
             },
         }
@@ -365,6 +439,8 @@ pub fn decode_get_auth_uri_request(
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct GetAuthUriResponse {
+    #[serde(default)]
+    pub csrf_state: String,
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default)]
     pub error: String,
@@ -384,7 +460,9 @@ pub fn encode_get_auth_uri_response<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.map(3)?;
+    e.map(4)?;
+    e.str("csrf_state")?;
+    e.str(&val.csrf_state)?;
     e.str("error")?;
     e.str(&val.error)?;
     e.str("success")?;
@@ -400,6 +478,7 @@ pub fn decode_get_auth_uri_response(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
 ) -> Result<GetAuthUriResponse, RpcError> {
     let __result = {
+        let mut csrf_state: Option<String> = None;
         let mut error: Option<String> = None;
         let mut success: Option<bool> = None;
         let mut uri: Option<String> = None;
@@ -417,9 +496,10 @@ pub fn decode_get_auth_uri_response(
             let len = d.fixed_array()?;
             for __i in 0..(len as usize) {
                 match __i {
-                    0 => error = Some(d.str()?.to_string()),
-                    1 => success = Some(d.bool()?),
-                    2 => uri = Some(d.str()?.to_string()),
+                    0 => csrf_state = Some(d.str()?.to_string()),
+                    1 => error = Some(d.str()?.to_string()),
+                    2 => success = Some(d.bool()?),
+                    3 => uri = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -427,6 +507,7 @@ pub fn decode_get_auth_uri_response(
             let len = d.fixed_map()?;
             for __i in 0..(len as usize) {
                 match d.str()? {
+                    "csrf_state" => csrf_state = Some(d.str()?.to_string()),
                     "error" => error = Some(d.str()?.to_string()),
                     "success" => success = Some(d.bool()?),
                     "uri" => uri = Some(d.str()?.to_string()),
@@ -435,11 +516,19 @@ pub fn decode_get_auth_uri_response(
             }
         }
         GetAuthUriResponse {
+            csrf_state: if let Some(__x) = csrf_state {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriResponse.csrf_state (#0)".to_string(),
+                ));
+            },
+
             error: if let Some(__x) = error {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriResponse.error (#0)".to_string(),
+                    "missing field GetAuthUriResponse.error (#1)".to_string(),
                 ));
             },
 
@@ -447,7 +536,7 @@ pub fn decode_get_auth_uri_response(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriResponse.success (#1)".to_string(),
+                    "missing field GetAuthUriResponse.success (#2)".to_string(),
                 ));
             },
 
@@ -455,7 +544,7 @@ pub fn decode_get_auth_uri_response(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriResponse.uri (#2)".to_string(),
+                    "missing field GetAuthUriResponse.uri (#3)".to_string(),
                 ));
             },
         }
