@@ -90,7 +90,6 @@ structure GetAuthUriResponse {
   @sensitive
   @required
   csrf_state: String
-
 }
 
 operation AuthorizeUser {
@@ -110,18 +109,25 @@ structure AuthorizeUserRequest {
   /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
   @n(1)
   @required
-  grantType: String
+  grant_type: String
 
   @n(2)
   @sensitive
   @required
-  token: String
+  auth_code: String
 
   /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
+  // state returned with auth_code
   @n(3)
   @sensitive
   @required
   state: String
+
+  //initially generated state - compare against state in provider.
+  @n(4)
+  @sensitive
+  @required
+  csrf_state: String
 }
 
 structure AuthorizeUserResponse {
@@ -133,8 +139,15 @@ structure AuthorizeUserResponse {
   /// If success is false, this may contain an error
   @n(1)
   error: String
+
+  @n(2)
+  @sensitive
+  @required
+  token: String
 }
 
+
+// Figure this part out later. 
 operation UnauthorizeUser {
   input: UnauthorizeUserRequest,
   output: UnauthorizeUserResponse,
