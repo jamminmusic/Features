@@ -1,0 +1,41 @@
+{
+  "version": 3,
+  "iv": "/AZAbuZVbxUKVFc4jbTdwA==",
+  "sentinel": {
+    "iv": "+jQO107jnLS5qSkrG+IbMw==",
+    "hmac": "Gpd6sipr80brVotCNxGcKDnODB8=",
+    "payload": "k+my9bJFYpEKtfxkrhd1qaxHEfgbf7lwUnkLbA8IyT1c1LLYA1YNRNeOaHZcW3BV"
+  },
+  "secrets": {
+    "auth_url:username": {
+      "iv": "yli+Cybsfp7Mnw8nIfm48g==",
+      "hmac": "ocKuS0m3CRFLVfHareVsjydWKJo=",
+      "payload": "ZJrI1tnKGXCZoASlRa242LGuwVUKf9pXL68VHW5LP2fzsNbWUoOKfRQygNSP6kAL"
+    },
+    "client_id:password": {
+      "iv": "qNvNKMm/ig5dm3neLJY4pQ==",
+      "hmac": "gDzBSR//MRp1aH115faVpI3MWNY=",
+      "payload": "8gL8tgwytru7g8Od5bqDLnaR4oaYcAevAJpxPo5wvhHueIFL/fUUVXakIDZoCgeX"
+    },
+    "client_secret:password": {
+      "iv": "Bbw71/vNP+Exy5X9iSrlTw==",
+      "hmac": "+iWZugGJtNMKPhH7HOJugNxJeII=",
+      "payload": "LKaW/zT4yAXTtk2V1psUEbNIvtZJd5FoLAasn4DYVlg="
+    },
+    "provider:username": {
+      "iv": "ZoDsDK4eEqMl9Ri6sIOlRQ==",
+      "hmac": "Szc0M5LADIi+q1eCYQtHxJ4HmRM=",
+      "payload": "YUZTEyO1rQXHmVv/3+gIdg=="
+    },
+    "scope:username": {
+      "iv": "K3d0ZQdDFAAK95EZgFGD8g==",
+      "hmac": "zo7VZNRNSedLJOkpIWCTu6nnEPk=",
+      "payload": "GtC8fP5oAwCfzq8R648KnU2LSb6DoLJDd1K9DcbyUSRR9zwLx9iclEIcUC4/jFiSsPSIOHqgv0SlamKq2h/jQg=="
+    },
+    "token_url:username": {
+      "iv": "tKNUePPLDcQVxx0McLiVNQ==",
+      "hmac": "w/chlgEW3MKL5IbM1uaprTtfKyQ=",
+      "payload": "KfChDi7iUs0zwVk2ebYrGSqG9my4n9oSpv8szV92wJB8JPGLKxiNX780R5D0n0Kc"
+    }
+  }
+}
