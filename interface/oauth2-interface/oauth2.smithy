@@ -60,6 +60,10 @@ structure GetAuthUriRequest {
 
   @n(6)
   @required
+  redirect_url: String
+
+  @n(7)
+  @required
   scope: String
 }
 
@@ -82,6 +86,11 @@ structure GetAuthUriResponse {
   @required
   uri: String
 
+  @n(3)
+  @sensitive
+  @required
+  csrf_state: String
+
 }
 
 operation AuthorizeUser {
@@ -102,6 +111,17 @@ structure AuthorizeUserRequest {
   @n(1)
   @required
   grantType: String
+
+  @n(2)
+  @sensitive
+  @required
+  token: String
+
+  /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
+  @n(3)
+  @sensitive
+  @required
+  state: String
 }
 
 structure AuthorizeUserResponse {
