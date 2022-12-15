@@ -8,7 +8,7 @@ resolver = "2"
 async-trait = "0.1"
 wasmbus-rpc = "0.11"
 wasmcloud-interface-httpserver = "0.8"
-oauth2-interface = { path = "..//oauth2-interface/rust", version = "0.1.0" }
+oauth2-interface = { path = "../oauth2-interface/rust", version = "0.1.0" }
 
 # test dependencies
 [dev-dependencies]
