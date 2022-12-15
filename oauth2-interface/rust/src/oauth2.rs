@@ -425,8 +425,8 @@ pub struct GetAuthUriResponse {
     #[serde(default)]
     pub success: bool,
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
-    #[serde(default)]
-    pub error: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
     #[serde(default)]
     pub uri: String,
     #[serde(default)]
@@ -445,7 +445,11 @@ where
 {
     e.array(4)?;
     e.bool(val.success)?;
-    e.str(&val.error)?;
+    if let Some(val) = val.error.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
     e.str(&val.uri)?;
     e.str(&val.csrf_state)?;
     Ok(())
@@ -458,7 +462,7 @@ pub fn decode_get_auth_uri_response(
 ) -> Result<GetAuthUriResponse, RpcError> {
     let __result = {
         let mut success: Option<bool> = None;
-        let mut error: Option<String> = None;
+        let mut error: Option<Option<String>> = Some(None);
         let mut uri: Option<String> = None;
         let mut csrf_state: Option<String> = None;
 
@@ -476,7 +480,14 @@ pub fn decode_get_auth_uri_response(
             for __i in 0..(len as usize) {
                 match __i {
                     0 => success = Some(d.bool()?),
-                    1 => error = Some(d.str()?.to_string()),
+                    1 => {
+                        error = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     2 => uri = Some(d.str()?.to_string()),
                     3 => csrf_state = Some(d.str()?.to_string()),
                     _ => d.skip()?,
@@ -487,7 +498,14 @@ pub fn decode_get_auth_uri_response(
             for __i in 0..(len as usize) {
                 match d.str()? {
                     "success" => success = Some(d.bool()?),
-                    "error" => error = Some(d.str()?.to_string()),
+                    "error" => {
+                        error = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     "uri" => uri = Some(d.str()?.to_string()),
                     "csrf_state" => csrf_state = Some(d.str()?.to_string()),
                     _ => d.skip()?,
@@ -502,14 +520,7 @@ pub fn decode_get_auth_uri_response(
                     "missing field GetAuthUriResponse.success (#0)".to_string(),
                 ));
             },
-
-            error: if let Some(__x) = error {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field GetAuthUriResponse.error (#1)".to_string(),
-                ));
-            },
+            error: error.unwrap(),
 
             uri: if let Some(__x) = uri {
                 __x

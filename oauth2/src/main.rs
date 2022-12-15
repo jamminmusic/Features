@@ -40,8 +40,8 @@ impl Oauth2 for Oauth2Provider {
         let x = GetAuthUriResponse {
             success: true,
             error: Some("words".to_string()),
-            uri: Some("words".to_string()),
-            csrf_state: Some("words".to_string()),
+            uri: "words".to_string(),
+            csrf_state: "words".to_string(),
         };
         Ok(x)
     }
@@ -54,7 +54,7 @@ impl Oauth2 for Oauth2Provider {
         let x = AuthorizeUserResponse {
             success: true,
             error: Some("words".to_string()),
-            token: Some("words".to_string()),
+            token: "words".to_string(),
         };
         Ok(x)
     }
