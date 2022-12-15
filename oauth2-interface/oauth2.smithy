@@ -144,6 +144,11 @@ structure AuthorizeUserResponse {
   @sensitive
   @required
   token: String
+
+  @n(3)
+  @sensitive
+  @required
+  user_id: String
 }
 
 

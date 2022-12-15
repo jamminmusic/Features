@@ -156,6 +156,8 @@ pub struct AuthorizeUserResponse {
     pub error: Option<String>,
     #[serde(default)]
     pub token: String,
+    #[serde(default)]
+    pub user_id: String,
 }
 
 // Encode AuthorizeUserResponse as CBOR and append to output stream
@@ -168,7 +170,7 @@ pub fn encode_authorize_user_response<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(3)?;
+    e.array(4)?;
     e.bool(val.success)?;
     if let Some(val) = val.error.as_ref() {
         e.str(val)?;
@@ -176,6 +178,7 @@ where
         e.null()?;
     }
     e.str(&val.token)?;
+    e.str(&val.user_id)?;
     Ok(())
 }
 
@@ -188,6 +191,7 @@ pub fn decode_authorize_user_response(
         let mut success: Option<bool> = None;
         let mut error: Option<Option<String>> = Some(None);
         let mut token: Option<String> = None;
+        let mut user_id: Option<String> = None;
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -212,6 +216,7 @@ pub fn decode_authorize_user_response(
                         }
                     }
                     2 => token = Some(d.str()?.to_string()),
+                    3 => user_id = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -229,6 +234,7 @@ pub fn decode_authorize_user_response(
                         }
                     }
                     "token" => token = Some(d.str()?.to_string()),
+                    "user_id" => user_id = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -248,6 +254,14 @@ pub fn decode_authorize_user_response(
             } else {
                 return Err(RpcError::Deser(
                     "missing field AuthorizeUserResponse.token (#2)".to_string(),
+                ));
+            },
+
+            user_id: if let Some(__x) = user_id {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field AuthorizeUserResponse.user_id (#3)".to_string(),
                 ));
             },
         }

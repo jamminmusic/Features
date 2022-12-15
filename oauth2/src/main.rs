@@ -55,6 +55,7 @@ impl Oauth2 for Oauth2Provider {
             success: true,
             error: Some("words".to_string()),
             token: "words".to_string(),
+            user_id: "words".to_string(),
         };
         Ok(x)
     }
