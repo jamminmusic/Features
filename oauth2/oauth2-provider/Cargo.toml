@@ -1,5 +1,5 @@
 [package]
-name = "oauth2"
+name = "oauth2-provider"
 version = "0.1.0"
 edition = "2021"
 resolver = "2"
@@ -16,5 +16,5 @@ wasmcloud-test-util = "0.6"
 tokio = { version = "1", features = ["full"] }
 
 [[bin]]
-name = "oauth_2"
+name = "oauth2-provider"
 path = "src/main.rs"

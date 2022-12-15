@@ -1,9 +1,9 @@
-# oauth2 Makefile
+# oauth2-provider Makefile
 
 CAPABILITY_ID = "jammin:interfaces:oauth2"
-NAME = "oauth2"
+NAME = "oauth2-provider"
 VENDOR = "jammin"
-PROJECT = oauth2
+PROJECT = oauth2-provider
 VERSION = 0.1.0
 REVISION = 0
 

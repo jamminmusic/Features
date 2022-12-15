@@ -1109,18 +1109,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "oauth2"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "oauth2-interface",
- "tokio",
- "wasmbus-rpc",
- "wasmcloud-interface-httpserver",
- "wasmcloud-test-util",
-]
-
-[[package]]
 name = "oauth2-interface"
 version = "0.1.0"
 dependencies = [
@@ -1129,6 +1117,18 @@ dependencies = [
  "serde_bytes",
  "wasmbus-rpc",
  "weld-codegen 0.6.0",
+]
+
+[[package]]
+name = "oauth2-provider"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "oauth2-interface",
+ "tokio",
+ "wasmbus-rpc",
+ "wasmcloud-interface-httpserver",
+ "wasmcloud-test-util",
 ]
 
 [[package]]
