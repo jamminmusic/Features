@@ -1,4 +1,4 @@
-// oauth_2.smithy
+// oauth2.smithy
 // An OAuth2 Provider
 
 
@@ -86,6 +86,7 @@ structure GetAuthUriResponse {
   @required
   uri: String
 
+  // store state in SurrealDB or KV to compare later
   @n(3)
   @sensitive
   @required
@@ -116,13 +117,13 @@ structure AuthorizeUserRequest {
   @required
   auth_code: String
 
-  // state returned with auth_code
+  // state returned with auth_code to be compared against original csrf_state
   @n(3)
   @sensitive
   @required
   state: String
 
-  //initially generated state - compare against state in provider.
+  // retrieved initially generated state - compare against returned state in provider
   @n(4)
   @sensitive
   @required
