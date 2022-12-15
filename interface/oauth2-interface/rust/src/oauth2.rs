@@ -23,7 +23,7 @@ use wasmbus_rpc::{
 pub const SMITHY_VERSION: &str = "1.0";
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-pub struct AuthorizeRequest {
+pub struct AuthorizeUserRequest {
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(rename = "grantType")]
     #[serde(default)]
@@ -32,12 +32,12 @@ pub struct AuthorizeRequest {
     pub provider: String,
 }
 
-// Encode AuthorizeRequest as CBOR and append to output stream
+// Encode AuthorizeUserRequest as CBOR and append to output stream
 #[doc(hidden)]
 #[allow(unused_mut)]
-pub fn encode_authorize_request<W: wasmbus_rpc::cbor::Write>(
+pub fn encode_authorize_user_request<W: wasmbus_rpc::cbor::Write>(
     mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
-    val: &AuthorizeRequest,
+    val: &AuthorizeUserRequest,
 ) -> RpcResult<()>
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
@@ -50,11 +50,11 @@ where
     Ok(())
 }
 
-// Decode AuthorizeRequest from cbor input stream
+// Decode AuthorizeUserRequest from cbor input stream
 #[doc(hidden)]
-pub fn decode_authorize_request(
+pub fn decode_authorize_user_request(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
-) -> Result<AuthorizeRequest, RpcError> {
+) -> Result<AuthorizeUserRequest, RpcError> {
     let __result = {
         let mut grant_type: Option<String> = None;
         let mut provider: Option<String> = None;
@@ -64,7 +64,7 @@ pub fn decode_authorize_request(
             wasmbus_rpc::cbor::Type::Map => false,
             _ => {
                 return Err(RpcError::Deser(
-                    "decoding struct AuthorizeRequest, expected array or map".to_string(),
+                    "decoding struct AuthorizeUserRequest, expected array or map".to_string(),
                 ))
             }
         };
@@ -87,12 +87,12 @@ pub fn decode_authorize_request(
                 }
             }
         }
-        AuthorizeRequest {
+        AuthorizeUserRequest {
             grant_type: if let Some(__x) = grant_type {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeRequest.grant_type (#0)".to_string(),
+                    "missing field AuthorizeUserRequest.grant_type (#0)".to_string(),
                 ));
             },
 
@@ -100,7 +100,7 @@ pub fn decode_authorize_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeRequest.provider (#1)".to_string(),
+                    "missing field AuthorizeUserRequest.provider (#1)".to_string(),
                 ));
             },
         }
@@ -108,7 +108,7 @@ pub fn decode_authorize_request(
     Ok(__result)
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-pub struct AuthorizeResponse {
+pub struct AuthorizeUserResponse {
     /// If success is false, this may contain an error
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
@@ -117,12 +117,12 @@ pub struct AuthorizeResponse {
     pub success: bool,
 }
 
-// Encode AuthorizeResponse as CBOR and append to output stream
+// Encode AuthorizeUserResponse as CBOR and append to output stream
 #[doc(hidden)]
 #[allow(unused_mut)]
-pub fn encode_authorize_response<W: wasmbus_rpc::cbor::Write>(
+pub fn encode_authorize_user_response<W: wasmbus_rpc::cbor::Write>(
     mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
-    val: &AuthorizeResponse,
+    val: &AuthorizeUserResponse,
 ) -> RpcResult<()>
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
@@ -139,11 +139,11 @@ where
     Ok(())
 }
 
-// Decode AuthorizeResponse from cbor input stream
+// Decode AuthorizeUserResponse from cbor input stream
 #[doc(hidden)]
-pub fn decode_authorize_response(
+pub fn decode_authorize_user_response(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
-) -> Result<AuthorizeResponse, RpcError> {
+) -> Result<AuthorizeUserResponse, RpcError> {
     let __result = {
         let mut error: Option<Option<String>> = Some(None);
         let mut success: Option<bool> = None;
@@ -153,7 +153,7 @@ pub fn decode_authorize_response(
             wasmbus_rpc::cbor::Type::Map => false,
             _ => {
                 return Err(RpcError::Deser(
-                    "decoding struct AuthorizeResponse, expected array or map".to_string(),
+                    "decoding struct AuthorizeUserResponse, expected array or map".to_string(),
                 ))
             }
         };
@@ -190,14 +190,14 @@ pub fn decode_authorize_response(
                 }
             }
         }
-        AuthorizeResponse {
+        AuthorizeUserResponse {
             error: error.unwrap(),
 
             success: if let Some(__x) = success {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeResponse.success (#1)".to_string(),
+                    "missing field AuthorizeUserResponse.success (#1)".to_string(),
                 ));
             },
         }
@@ -205,41 +205,304 @@ pub fn decode_authorize_response(
     Ok(__result)
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-pub struct UnauthorizeRequest {
+pub struct GetAuthUriRequest {
+    #[serde(default)]
+    pub auth_url: String,
+    #[serde(default)]
+    pub client_id: String,
+    #[serde(default)]
+    pub client_secret: String,
+    /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
+    #[serde(default)]
+    pub grant_type: String,
     #[serde(default)]
     pub provider: String,
+    #[serde(default)]
+    pub scope: String,
+    #[serde(default)]
+    pub token_url: String,
 }
 
-// Encode UnauthorizeRequest as CBOR and append to output stream
+// Encode GetAuthUriRequest as CBOR and append to output stream
 #[doc(hidden)]
 #[allow(unused_mut)]
-pub fn encode_unauthorize_request<W: wasmbus_rpc::cbor::Write>(
+pub fn encode_get_auth_uri_request<W: wasmbus_rpc::cbor::Write>(
     mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
-    val: &UnauthorizeRequest,
+    val: &GetAuthUriRequest,
 ) -> RpcResult<()>
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.map(1)?;
+    e.map(7)?;
+    e.str("auth_url")?;
+    e.str(&val.auth_url)?;
+    e.str("client_id")?;
+    e.str(&val.client_id)?;
+    e.str("client_secret")?;
+    e.str(&val.client_secret)?;
+    e.str("grant_type")?;
+    e.str(&val.grant_type)?;
     e.str("provider")?;
     e.str(&val.provider)?;
+    e.str("scope")?;
+    e.str(&val.scope)?;
+    e.str("token_url")?;
+    e.str(&val.token_url)?;
     Ok(())
 }
 
-// Decode UnauthorizeRequest from cbor input stream
+// Decode GetAuthUriRequest from cbor input stream
 #[doc(hidden)]
-pub fn decode_unauthorize_request(
+pub fn decode_get_auth_uri_request(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
-) -> Result<UnauthorizeRequest, RpcError> {
+) -> Result<GetAuthUriRequest, RpcError> {
     let __result = {
+        let mut auth_url: Option<String> = None;
+        let mut client_id: Option<String> = None;
+        let mut client_secret: Option<String> = None;
+        let mut grant_type: Option<String> = None;
         let mut provider: Option<String> = None;
+        let mut scope: Option<String> = None;
+        let mut token_url: Option<String> = None;
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
             wasmbus_rpc::cbor::Type::Map => false,
             _ => {
                 return Err(RpcError::Deser(
-                    "decoding struct UnauthorizeRequest, expected array or map".to_string(),
+                    "decoding struct GetAuthUriRequest, expected array or map".to_string(),
+                ))
+            }
+        };
+        if is_array {
+            let len = d.fixed_array()?;
+            for __i in 0..(len as usize) {
+                match __i {
+                    0 => auth_url = Some(d.str()?.to_string()),
+                    1 => client_id = Some(d.str()?.to_string()),
+                    2 => client_secret = Some(d.str()?.to_string()),
+                    3 => grant_type = Some(d.str()?.to_string()),
+                    4 => provider = Some(d.str()?.to_string()),
+                    5 => scope = Some(d.str()?.to_string()),
+                    6 => token_url = Some(d.str()?.to_string()),
+                    _ => d.skip()?,
+                }
+            }
+        } else {
+            let len = d.fixed_map()?;
+            for __i in 0..(len as usize) {
+                match d.str()? {
+                    "auth_url" => auth_url = Some(d.str()?.to_string()),
+                    "client_id" => client_id = Some(d.str()?.to_string()),
+                    "client_secret" => client_secret = Some(d.str()?.to_string()),
+                    "grant_type" => grant_type = Some(d.str()?.to_string()),
+                    "provider" => provider = Some(d.str()?.to_string()),
+                    "scope" => scope = Some(d.str()?.to_string()),
+                    "token_url" => token_url = Some(d.str()?.to_string()),
+                    _ => d.skip()?,
+                }
+            }
+        }
+        GetAuthUriRequest {
+            auth_url: if let Some(__x) = auth_url {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.auth_url (#0)".to_string(),
+                ));
+            },
+
+            client_id: if let Some(__x) = client_id {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.client_id (#1)".to_string(),
+                ));
+            },
+
+            client_secret: if let Some(__x) = client_secret {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.client_secret (#2)".to_string(),
+                ));
+            },
+
+            grant_type: if let Some(__x) = grant_type {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.grant_type (#3)".to_string(),
+                ));
+            },
+
+            provider: if let Some(__x) = provider {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.provider (#4)".to_string(),
+                ));
+            },
+
+            scope: if let Some(__x) = scope {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.scope (#5)".to_string(),
+                ));
+            },
+
+            token_url: if let Some(__x) = token_url {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriRequest.token_url (#6)".to_string(),
+                ));
+            },
+        }
+    };
+    Ok(__result)
+}
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+pub struct GetAuthUriResponse {
+    #[serde(default)]
+    pub error: String,
+    /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
+    #[serde(default)]
+    pub success: bool,
+    #[serde(default)]
+    pub uri: String,
+}
+
+// Encode GetAuthUriResponse as CBOR and append to output stream
+#[doc(hidden)]
+#[allow(unused_mut)]
+pub fn encode_get_auth_uri_response<W: wasmbus_rpc::cbor::Write>(
+    mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
+    val: &GetAuthUriResponse,
+) -> RpcResult<()>
+where
+    <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
+{
+    e.map(3)?;
+    e.str("error")?;
+    e.str(&val.error)?;
+    e.str("success")?;
+    e.bool(val.success)?;
+    e.str("uri")?;
+    e.str(&val.uri)?;
+    Ok(())
+}
+
+// Decode GetAuthUriResponse from cbor input stream
+#[doc(hidden)]
+pub fn decode_get_auth_uri_response(
+    d: &mut wasmbus_rpc::cbor::Decoder<'_>,
+) -> Result<GetAuthUriResponse, RpcError> {
+    let __result = {
+        let mut error: Option<String> = None;
+        let mut success: Option<bool> = None;
+        let mut uri: Option<String> = None;
+
+        let is_array = match d.datatype()? {
+            wasmbus_rpc::cbor::Type::Array => true,
+            wasmbus_rpc::cbor::Type::Map => false,
+            _ => {
+                return Err(RpcError::Deser(
+                    "decoding struct GetAuthUriResponse, expected array or map".to_string(),
+                ))
+            }
+        };
+        if is_array {
+            let len = d.fixed_array()?;
+            for __i in 0..(len as usize) {
+                match __i {
+                    0 => error = Some(d.str()?.to_string()),
+                    1 => success = Some(d.bool()?),
+                    2 => uri = Some(d.str()?.to_string()),
+                    _ => d.skip()?,
+                }
+            }
+        } else {
+            let len = d.fixed_map()?;
+            for __i in 0..(len as usize) {
+                match d.str()? {
+                    "error" => error = Some(d.str()?.to_string()),
+                    "success" => success = Some(d.bool()?),
+                    "uri" => uri = Some(d.str()?.to_string()),
+                    _ => d.skip()?,
+                }
+            }
+        }
+        GetAuthUriResponse {
+            error: if let Some(__x) = error {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriResponse.error (#0)".to_string(),
+                ));
+            },
+
+            success: if let Some(__x) = success {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriResponse.success (#1)".to_string(),
+                ));
+            },
+
+            uri: if let Some(__x) = uri {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field GetAuthUriResponse.uri (#2)".to_string(),
+                ));
+            },
+        }
+    };
+    Ok(__result)
+}
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+pub struct UnauthorizeUserRequest {
+    #[serde(default)]
+    pub provider: String,
+    #[serde(default)]
+    pub user: String,
+}
+
+// Encode UnauthorizeUserRequest as CBOR and append to output stream
+#[doc(hidden)]
+#[allow(unused_mut)]
+pub fn encode_unauthorize_user_request<W: wasmbus_rpc::cbor::Write>(
+    mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
+    val: &UnauthorizeUserRequest,
+) -> RpcResult<()>
+where
+    <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
+{
+    e.map(2)?;
+    e.str("provider")?;
+    e.str(&val.provider)?;
+    e.str("user")?;
+    e.str(&val.user)?;
+    Ok(())
+}
+
+// Decode UnauthorizeUserRequest from cbor input stream
+#[doc(hidden)]
+pub fn decode_unauthorize_user_request(
+    d: &mut wasmbus_rpc::cbor::Decoder<'_>,
+) -> Result<UnauthorizeUserRequest, RpcError> {
+    let __result = {
+        let mut provider: Option<String> = None;
+        let mut user: Option<String> = None;
+
+        let is_array = match d.datatype()? {
+            wasmbus_rpc::cbor::Type::Array => true,
+            wasmbus_rpc::cbor::Type::Map => false,
+            _ => {
+                return Err(RpcError::Deser(
+                    "decoding struct UnauthorizeUserRequest, expected array or map".to_string(),
                 ))
             }
         };
@@ -248,6 +511,7 @@ pub fn decode_unauthorize_request(
             for __i in 0..(len as usize) {
                 match __i {
                     0 => provider = Some(d.str()?.to_string()),
+                    1 => user = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -256,16 +520,25 @@ pub fn decode_unauthorize_request(
             for __i in 0..(len as usize) {
                 match d.str()? {
                     "provider" => provider = Some(d.str()?.to_string()),
+                    "user" => user = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
         }
-        UnauthorizeRequest {
+        UnauthorizeUserRequest {
             provider: if let Some(__x) = provider {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field UnauthorizeRequest.provider (#0)".to_string(),
+                    "missing field UnauthorizeUserRequest.provider (#0)".to_string(),
+                ));
+            },
+
+            user: if let Some(__x) = user {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field UnauthorizeUserRequest.user (#1)".to_string(),
                 ));
             },
         }
@@ -273,7 +546,7 @@ pub fn decode_unauthorize_request(
     Ok(__result)
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-pub struct UnauthorizeResponse {
+pub struct UnauthorizeUserResponse {
     /// If success is false, this may contain an error
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
@@ -282,12 +555,12 @@ pub struct UnauthorizeResponse {
     pub success: bool,
 }
 
-// Encode UnauthorizeResponse as CBOR and append to output stream
+// Encode UnauthorizeUserResponse as CBOR and append to output stream
 #[doc(hidden)]
 #[allow(unused_mut)]
-pub fn encode_unauthorize_response<W: wasmbus_rpc::cbor::Write>(
+pub fn encode_unauthorize_user_response<W: wasmbus_rpc::cbor::Write>(
     mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
-    val: &UnauthorizeResponse,
+    val: &UnauthorizeUserResponse,
 ) -> RpcResult<()>
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
@@ -304,11 +577,11 @@ where
     Ok(())
 }
 
-// Decode UnauthorizeResponse from cbor input stream
+// Decode UnauthorizeUserResponse from cbor input stream
 #[doc(hidden)]
-pub fn decode_unauthorize_response(
+pub fn decode_unauthorize_user_response(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
-) -> Result<UnauthorizeResponse, RpcError> {
+) -> Result<UnauthorizeUserResponse, RpcError> {
     let __result = {
         let mut error: Option<Option<String>> = Some(None);
         let mut success: Option<bool> = None;
@@ -318,7 +591,7 @@ pub fn decode_unauthorize_response(
             wasmbus_rpc::cbor::Type::Map => false,
             _ => {
                 return Err(RpcError::Deser(
-                    "decoding struct UnauthorizeResponse, expected array or map".to_string(),
+                    "decoding struct UnauthorizeUserResponse, expected array or map".to_string(),
                 ))
             }
         };
@@ -355,22 +628,21 @@ pub fn decode_unauthorize_response(
                 }
             }
         }
-        UnauthorizeResponse {
+        UnauthorizeUserResponse {
             error: error.unwrap(),
 
             success: if let Some(__x) = success {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field UnauthorizeResponse.success (#1)".to_string(),
+                    "missing field UnauthorizeUserResponse.success (#1)".to_string(),
                 ));
             },
         }
     };
     Ok(__result)
 }
-/// The Oauth2 service has a single method, calculate, which
-/// calculates the factorial of its whole number parameter.
+/// The Oauth2 service has 3 Operations: To Authorize the user with OAuth Provider, To Remove Authorization, and to get the initial /Authorize URI
 /// wasmbus.contractId: jammin:interfaces:oauth2
 /// wasmbus.providerReceive
 /// wasmbus.actorReceive
@@ -380,40 +652,53 @@ pub trait Oauth2 {
     fn contract_id() -> &'static str {
         "jammin:interfaces:oauth2"
     }
-    async fn authorize(
+    async fn authorize_user(
         &self,
         ctx: &Context,
-        arg: &AuthorizeRequest,
-    ) -> RpcResult<AuthorizeResponse>;
-    async fn unauthorize(
+        arg: &AuthorizeUserRequest,
+    ) -> RpcResult<AuthorizeUserResponse>;
+    async fn unauthorize_user(
         &self,
         ctx: &Context,
-        arg: &UnauthorizeRequest,
-    ) -> RpcResult<UnauthorizeResponse>;
+        arg: &UnauthorizeUserRequest,
+    ) -> RpcResult<UnauthorizeUserResponse>;
+    async fn get_auth_uri(
+        &self,
+        ctx: &Context,
+        arg: &GetAuthUriRequest,
+    ) -> RpcResult<GetAuthUriResponse>;
 }
 
 /// Oauth2Receiver receives messages defined in the Oauth2 service trait
-/// The Oauth2 service has a single method, calculate, which
-/// calculates the factorial of its whole number parameter.
+/// The Oauth2 service has 3 Operations: To Authorize the user with OAuth Provider, To Remove Authorization, and to get the initial /Authorize URI
 #[doc(hidden)]
 #[async_trait]
 pub trait Oauth2Receiver: MessageDispatch + Oauth2 {
     async fn dispatch(&self, ctx: &Context, message: Message<'_>) -> Result<Vec<u8>, RpcError> {
         match message.method {
-            "Authorize" => {
-                let value: AuthorizeRequest = wasmbus_rpc::common::deserialize(&message.arg)
-                    .map_err(|e| RpcError::Deser(format!("'AuthorizeRequest': {}", e)))?;
+            "AuthorizeUser" => {
+                let value: AuthorizeUserRequest = wasmbus_rpc::common::deserialize(&message.arg)
+                    .map_err(|e| RpcError::Deser(format!("'AuthorizeUserRequest': {}", e)))?;
 
-                let resp = Oauth2::authorize(self, ctx, &value).await?;
+                let resp = Oauth2::authorize_user(self, ctx, &value).await?;
                 let buf = wasmbus_rpc::common::serialize(&resp)?;
 
                 Ok(buf)
             }
-            "Unauthorize" => {
-                let value: UnauthorizeRequest = wasmbus_rpc::common::deserialize(&message.arg)
-                    .map_err(|e| RpcError::Deser(format!("'UnauthorizeRequest': {}", e)))?;
+            "UnauthorizeUser" => {
+                let value: UnauthorizeUserRequest = wasmbus_rpc::common::deserialize(&message.arg)
+                    .map_err(|e| RpcError::Deser(format!("'UnauthorizeUserRequest': {}", e)))?;
 
-                let resp = Oauth2::unauthorize(self, ctx, &value).await?;
+                let resp = Oauth2::unauthorize_user(self, ctx, &value).await?;
+                let buf = wasmbus_rpc::common::serialize(&resp)?;
+
+                Ok(buf)
+            }
+            "GetAuthUri" => {
+                let value: GetAuthUriRequest = wasmbus_rpc::common::deserialize(&message.arg)
+                    .map_err(|e| RpcError::Deser(format!("'GetAuthUriRequest': {}", e)))?;
+
+                let resp = Oauth2::get_auth_uri(self, ctx, &value).await?;
                 let buf = wasmbus_rpc::common::serialize(&resp)?;
 
                 Ok(buf)
@@ -427,8 +712,7 @@ pub trait Oauth2Receiver: MessageDispatch + Oauth2 {
 }
 
 /// Oauth2Sender sends messages to a Oauth2 service
-/// The Oauth2 service has a single method, calculate, which
-/// calculates the factorial of its whole number parameter.
+/// The Oauth2 service has 3 Operations: To Authorize the user with OAuth Provider, To Remove Authorization, and to get the initial /Authorize URI
 /// client for sending Oauth2 messages
 #[derive(Debug)]
 pub struct Oauth2Sender<T: Transport> {
@@ -493,11 +777,11 @@ impl Oauth2Sender<wasmbus_rpc::actor::prelude::WasmHost> {
 #[async_trait]
 impl<T: Transport + std::marker::Sync + std::marker::Send> Oauth2 for Oauth2Sender<T> {
     #[allow(unused)]
-    async fn authorize(
+    async fn authorize_user(
         &self,
         ctx: &Context,
-        arg: &AuthorizeRequest,
-    ) -> RpcResult<AuthorizeResponse> {
+        arg: &AuthorizeUserRequest,
+    ) -> RpcResult<AuthorizeUserResponse> {
         let buf = wasmbus_rpc::common::serialize(arg)?;
 
         let resp = self
@@ -505,23 +789,23 @@ impl<T: Transport + std::marker::Sync + std::marker::Send> Oauth2 for Oauth2Send
             .send(
                 ctx,
                 Message {
-                    method: "Oauth2.Authorize",
+                    method: "Oauth2.AuthorizeUser",
                     arg: Cow::Borrowed(&buf),
                 },
                 None,
             )
             .await?;
 
-        let value: AuthorizeResponse = wasmbus_rpc::common::deserialize(&resp)
-            .map_err(|e| RpcError::Deser(format!("'{}': AuthorizeResponse", e)))?;
+        let value: AuthorizeUserResponse = wasmbus_rpc::common::deserialize(&resp)
+            .map_err(|e| RpcError::Deser(format!("'{}': AuthorizeUserResponse", e)))?;
         Ok(value)
     }
     #[allow(unused)]
-    async fn unauthorize(
+    async fn unauthorize_user(
         &self,
         ctx: &Context,
-        arg: &UnauthorizeRequest,
-    ) -> RpcResult<UnauthorizeResponse> {
+        arg: &UnauthorizeUserRequest,
+    ) -> RpcResult<UnauthorizeUserResponse> {
         let buf = wasmbus_rpc::common::serialize(arg)?;
 
         let resp = self
@@ -529,15 +813,39 @@ impl<T: Transport + std::marker::Sync + std::marker::Send> Oauth2 for Oauth2Send
             .send(
                 ctx,
                 Message {
-                    method: "Oauth2.Unauthorize",
+                    method: "Oauth2.UnauthorizeUser",
                     arg: Cow::Borrowed(&buf),
                 },
                 None,
             )
             .await?;
 
-        let value: UnauthorizeResponse = wasmbus_rpc::common::deserialize(&resp)
-            .map_err(|e| RpcError::Deser(format!("'{}': UnauthorizeResponse", e)))?;
+        let value: UnauthorizeUserResponse = wasmbus_rpc::common::deserialize(&resp)
+            .map_err(|e| RpcError::Deser(format!("'{}': UnauthorizeUserResponse", e)))?;
+        Ok(value)
+    }
+    #[allow(unused)]
+    async fn get_auth_uri(
+        &self,
+        ctx: &Context,
+        arg: &GetAuthUriRequest,
+    ) -> RpcResult<GetAuthUriResponse> {
+        let buf = wasmbus_rpc::common::serialize(arg)?;
+
+        let resp = self
+            .transport
+            .send(
+                ctx,
+                Message {
+                    method: "Oauth2.GetAuthUri",
+                    arg: Cow::Borrowed(&buf),
+                },
+                None,
+            )
+            .await?;
+
+        let value: GetAuthUriResponse = wasmbus_rpc::common::deserialize(&resp)
+            .map_err(|e| RpcError::Deser(format!("'{}': GetAuthUriResponse", e)))?;
         Ok(value)
     }
 }
