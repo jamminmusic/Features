@@ -10,7 +10,7 @@
 # in the per-language file settings later in this file.
 [[models]]
 path = "."
-files = [ "oauth_2.smithy" ]
+files = ["oauth2.smithy"]
 
 
 [[models]]
@@ -18,7 +18,7 @@ files = [ "oauth_2.smithy" ]
 # If a relative path is used, it is relative to the location of this codegen.toml
 #path = "/path/to/my-interfaces"
 url = "https://wasmcloud.github.io/interfaces/idl/org.wasmcloud"
-files = [ "wasmcloud-core.smithy", "wasmcloud-model.smithy" ]
+files = ["wasmcloud-core.smithy", "wasmcloud-model.smithy"]
 
 
 ##
@@ -65,5 +65,5 @@ output_dir = "rust"
 # and importing each of them into src/lib.rs
 
 [[rust.files]]
-path = "src/oauth_2.rs"
-namespace = "org.jammin.interfaces.oauth_2"
+path = "src/oauth2.rs"
+namespace = "org.jammin.interfaces.oauth2"

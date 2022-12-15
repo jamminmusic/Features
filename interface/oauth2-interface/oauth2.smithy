@@ -1,36 +1,33 @@
-// music_auth.smithy
+// oauth_2.smithy
+// A simple service that calculates the factorial of a whole number
+
 
 // Tell the code generator how to reference symbols defined in this namespace
-metadata package = [ { namespace: "jammin.service.music_auth", crate: "jammin_interface_music_auth" } ]
+metadata package = [ { namespace: "org.jammin.interfaces.oauth2", crate: "oauth2_interface" } ]
 
-namespace jammin.service.music_auth
+namespace org.jammin.interfaces.oauth2
 
 use org.wasmcloud.model#wasmbus
 use org.wasmcloud.model#U32
 use org.wasmcloud.model#U64
-use org.wasmcloud.model#n
 
-/// The MusicAuth service
+/// The Oauth2 service has a single method, calculate, which
+/// calculates the factorial of its whole number parameter.
 @wasmbus(
-    contractId: "jammin:service:music_auth",
+    contractId: "jammin:interfaces:oauth2",
     actorReceive: true,
     providerReceive: true )
-service MusicAuth {
+service Oauth2 {
   version: "0.1",
-  operations: [ ConnectProvider, DisconnectProvider ]
+  operations: [ Authorize, Unauthorize ]
 }
 
-operation ConnectProvider {
-  input: ConnectProviderRequest,
-  output: ConnectProviderResponse,
+operation Authorize {
+  input: AuthorizeRequest,
+  output: AuthorizeResponse,
 }
 
-operation DisconnectProvider {
-  input: DisconnectProviderRequest,
-  output: DisconnectProviderResponse,
-}
-
-structure ConnectProviderRequest {
+structure AuthorizeRequest {
   // If using cbor serialization, and all the fields have @n references, 
   // the struct is serialized as an array (without field names), so it’s much more compact and faster.
   // Schema evolution: If you modify the struct and add a field, as long as you keep the numbers of 
@@ -43,14 +40,9 @@ structure ConnectProviderRequest {
   @n(1)
   @required
   grantType: String
-
-  /// Client request origin needed for auth redirect, get x-forwarded-for header. 
-  @n(2)
-  @required
-  header: HeaderMap
 }
 
-structure ConnectProviderResponse {
+structure AuthorizeResponse {
   /// indication whether the request was successful
   @n(0)
   @required
@@ -61,13 +53,18 @@ structure ConnectProviderResponse {
   error: String
 }
 
-structure DisconnectProviderRequest {
+operation Unauthorize {
+  input: UnauthorizeRequest,
+  output: UnauthorizeResponse,
+}
+
+structure UnauthorizeRequest {
   @n(0)
   @required
   provider: String
 }
 
-structure DisconnectProviderResponse {
+structure UnauthorizeResponse {
   /// indication whether the request was successful
   @n(0)
   @required
@@ -76,15 +73,4 @@ structure DisconnectProviderResponse {
   /// If success is false, this may contain an error
   @n(1)
   error: String
-}
-
-/// map data structure for holding http headers
-///
-map HeaderMap {
-    key: String,
-    value: HeaderValues,
-}
-
-list HeaderValues {
-    member: String
 }
