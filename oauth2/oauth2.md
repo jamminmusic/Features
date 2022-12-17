@@ -23,8 +23,8 @@ sequenceDiagram
         Oauth2Actor[http/nats] -->> AuthCache: get csrf_state
         Oauth2Actor[http/nats] ->> Oauth2Provider: AuthorizeRequest
         Oauth2Provider ->> Oauth2Provider: compare state, csrf_state
-        Oauth2Actor[http/nats] ->> SocialProvider: auth_code, option(pkce_challenge)
-        SocialProvider -->> Oauth2Actor[http/nats]: token exchange
+        Oauth2Provider ->> SocialProvider: auth_code, option(pkce_challenge)
+        SocialProvider -->> Oauth2Provider: token exchange
         Oauth2Provider -->> Oauth2Actor[http/nats]: AuthorizeResponse
         Oauth2Actor[http/nats] ->> AuthCache: Token, UserID
         Oauth2Actor[http/nats] -->> Client: Authenticated
