@@ -1,6 +1,7 @@
 {
     "name": "Rust Dev Container",
     "image": "ghcr.io/jamminmusic/rust-devcontainer:latest",
+    "remoteUser": "vscode",
     "customizations": {
         "vscode": {
             "settings": {
@@ -22,6 +23,5 @@
             ]
         }
     },
-    "postCreateCommand": "docker run --rm -p 8000:8000 surrealdb/surrealdb:latest start",
-    "remoteUser": "vscode"
+    "postCreateCommand": "docker run --rm -p 8000:8000 surrealdb/surrealdb:latest start"
 }
