@@ -19,7 +19,10 @@ jobs:
       actor_name_output: ${{ steps.set_actor_name.outputs.actor_name }}
       actor_version_output: ${{ steps.set_actor_version.outputs.actor_version }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout (GitHub)
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
       - uses: wasmcloud/common-actions/install-wash@main
       - name: Add wasm32-unknown-unknown
         run: rustup target add wasm32-unknown-unknown
@@ -54,12 +57,12 @@ jobs:
       - name: Build Subject Key Secret String
         if: env.VERIFIED == 'true'
         run: |
-         secret_prefix='WASH_'
-         secret_unique=$(echo $ACTOR_NAME | tr 'a-z' 'A-Z')
-         secret_suffix='_KEY'
-         secret=${secret_prefix}${secret_unique}${secret_suffix}
-         echo "SECRET_STRING=$secret" >> $GITHUB_ENV
-            # Once you've written unit tests for your actor, you can uncomment
+          secret_prefix='WASH_'
+          secret_unique=$(echo $ACTOR_NAME | tr 'a-z' 'A-Z')
+          secret_suffix='_KEY'
+          secret=${secret_prefix}${secret_unique}${secret_suffix}
+          echo "SECRET_STRING=$secret" >> $GITHUB_ENV
+             # Once you've written unit tests for your actor, you can uncomment
       # the two lines below to automatically run tests
       # - name: Test Actor
       #   run: cargo test --target x86_64-unknown-linux-gnu -- --nocapture
@@ -144,7 +147,7 @@ jobs:
           path: ${{ env.ACTOR_NAME }}/build
       - name: Convert Repo Name to Lowercase # OCI Bug requirement
         run: |
-         echo "REPO_LOWER=$(echo ${{ github.REPOSITORY }} | tr 'A-Z' 'a-z')" >> $GITHUB_ENV
+          echo "REPO_LOWER=$(echo ${{ github.REPOSITORY }} | tr 'A-Z' 'a-z')" >> $GITHUB_ENV
       - name: Push Actor to GHCR
         env:
           WASH_REG_USER: ${{ github.repository_owner }}
