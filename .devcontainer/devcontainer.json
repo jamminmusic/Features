@@ -1,6 +1,6 @@
 {
     "name": "Rust Dev Container",
-    "image": "ghcr.io/jamminmusic/rust-devcontainer:latest",
+    "image": "ghcr.io/jamminmusic/containers/rust-devcontainer:latest",
     "remoteUser": "vscode",
     "customizations": {
         "vscode": {
