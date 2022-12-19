@@ -8,11 +8,11 @@ use wasmcloud_interface_messaging::{MessageSubscriber, MessageSubscriberReceiver
 
 #[derive(Debug, Default, Actor, HealthResponder)]
 #[services(Actor, HttpServer)]
-struct Oauth2ActorActor {}
+struct Oauth2Actor {}
 
 /// Implementation of HttpServer trait methods
 #[async_trait]
-impl HttpServer for Oauth2ActorActor {
+impl HttpServer for Oauth2Actor {
     /// Returns a greeting, "Hello World", in the response body.
     /// If the request contains a query parameter 'name=NAME', the
     /// response is changed to "Hello NAME"
@@ -26,6 +26,24 @@ impl HttpServer for Oauth2ActorActor {
             body: format!("Hello {}", text).as_bytes().to_vec(),
             ..Default::default()
         })
+    }
+}
+
+
+// example - Implementing the Messaging.HandleMessage operation
+// use wasmbus_rpc::actor::prelude::*;
+// use wasmcloud_interface_logging::info;
+// use wasmcloud_interface_messaging::{MessageSubscriber, MessageSubscriberReceiver, SubMessage};
+
+#[derive(Debug, Default, Actor, HealthResponder)]
+#[services(Actor, MessageSubscriber)]
+
+#[async_trait]
+impl MessageSubscriber for Oauth2Actor {
+    /// Handle a message received on a subscription
+    async fn handle_message(&self, _ctx: &Context, msg: &SubMessage) -> RpcResult<()> {
+        info!("Received message: {:?}", msg);
+        Ok(())
     }
 }
 

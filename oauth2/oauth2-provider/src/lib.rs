@@ -12,13 +12,14 @@ use wasmbus_rpc::provider::prelude::*;
 
 
 // client origin must be passed in here
-async fn create_client(config: MusicAuthConfig, client_origin: String) -> RpcResult<BasicClient> {
+async fn create_client(config: TBD , client_origin: String) -> RpcResult<BasicClient> {
     let client = BasicClient::new(
         ClientId::new(config.client_id.unwrap()),
         Some(ClientSecret::new(config.client_secret.unwrap())),
         AuthUrl::new(config.auth_url.unwrap()).expect("Invalid authorization endpoint URL"),
         Some(TokenUrl::new(config.token_url.unwrap()).expect("Invalid authorization endpoint URL")),
     )
+    // DO NOT HARDCODE URI HERE - THIS IS PASSED IN
     .set_redirect_uri(
         RedirectUrl::new("http://local.jammin.dev".to_string()).expect("Invalid redirect URL"),
     );
@@ -34,7 +35,7 @@ async fn generate_pkce() -> RpcResult<(PkceCodeChallenge, PkceCodeVerifier)> {
 async fn generate_auth_url(
     client: BasicClient,
     pkce_code_challenge: Option<PkceCodeChallenge>,
-    config: MusicAuthConfig,
+    config: TBD,
 ) -> RpcResult<(url::Url, CsrfToken)> {
     let (authorize_url, csrf_state) = client
         .authorize_url(CsrfToken::new_random)
@@ -49,14 +50,6 @@ async fn client_redirect(client: BasicClient, auth_url: url::Url) {
     // Once the user has been redirected to the redirect URL, you'll have access to the
     // authorization code. For security reasons, your code should verify that the `state`
     // parameter returned by the server matches `csrf_state`.
-
-    // let client = reqwest::Client::new();
-    // let res = client
-    //     .post("http://local.jammin.dev")
-    //     .body(auth_url.to_string())
-    //     .send()
-    //     .await;
-
 }
 
 async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_response: ){
