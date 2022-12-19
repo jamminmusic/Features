@@ -1,5 +1,7 @@
 use wasmbus_rpc::actor::prelude::*;
 use wasmcloud_interface_httpserver::{HttpRequest, HttpResponse, HttpServer, HttpServerReceiver};
+use wasmcloud_interface_keyvalue::{KeyValue, KeyValueSender};
+use wasmcloud_interface_messaging::{MessageSubscriber, MessageSubscriberReceiver, SubMessage, MessagingSender, PubMessage};
 
 #[derive(Debug, Default, Actor, HealthResponder)]
 #[services(Actor, HttpServer)]
