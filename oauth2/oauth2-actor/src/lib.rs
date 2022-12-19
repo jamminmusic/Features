@@ -1,7 +1,10 @@
 use wasmbus_rpc::actor::prelude::*;
 use wasmcloud_interface_httpserver::{HttpRequest, HttpResponse, HttpServer, HttpServerReceiver};
+// Needs Vault link
 use wasmcloud_interface_keyvalue::{KeyValue, KeyValueSender};
-use wasmcloud_interface_messaging::{MessageSubscriber, MessageSubscriberReceiver, SubMessage, MessagingSender, PubMessage};
+// Determine what is needed for interface, and remove the others.
+// Needs NATS link
+use wasmcloud_interface_messaging::{MessageSubscriber, MessageSubscriberReceiver, SubMessage, MessagingSender, PubMessage, RequestMessage};
 
 #[derive(Debug, Default, Actor, HealthResponder)]
 #[services(Actor, HttpServer)]
@@ -26,3 +29,28 @@ impl HttpServer for Oauth2ActorActor {
     }
 }
 
+// example - Sending a message via a wasmcloud:messaging provider, waiting one second for a reply
+// use wasmcloud_interface_messaging::{Messaging, MessagingSender, RequestMessage};
+async fn message_request(ctx: &Context, subject: &str, body: &[u8]) -> RpcResult<()> {
+    let provider = MessagingSender::new();
+    if let Err(e) = provider
+        .request(
+            ctx,
+            &RequestMessage {
+                body: body.to_vec(),
+                subject: subject.to_owned(),
+                timeout_ms: 1_000,
+            },
+        )
+        .await
+    {
+        Err(format!("Could not request message {}", e.to_string()).into())
+    } else {
+        Ok(())
+    }
+}
+
+// example - check if value exists in kvstore
+async fn key_exists(ctx: &Context, key: &str) -> bool {
+    KeyValueSender::new().contains(ctx, key).await.is_ok()
+}
