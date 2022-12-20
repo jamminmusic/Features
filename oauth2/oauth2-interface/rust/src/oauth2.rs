@@ -160,10 +160,8 @@ pub struct AuthorizeUserResponse {
     pub refresh_token: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub device_id: Option<String>,
     #[serde(default)]
-    pub expire_date: String,
+    pub device_id: String,
     #[serde(default)]
     pub scope: String,
 }
@@ -196,12 +194,8 @@ where
     } else {
         e.null()?;
     }
-    if let Some(val) = val.device_id.as_ref() {
-        e.str(val)?;
-    } else {
-        e.null()?;
-    }
-    e.str(&val.expire_date)?;
+    e.null()?;
+    e.str(&val.device_id)?;
     e.str(&val.scope)?;
     Ok(())
 }
@@ -217,8 +211,7 @@ pub fn decode_authorize_user_response(
         let mut access_token: Option<String> = None;
         let mut refresh_token: Option<Option<String>> = Some(None);
         let mut user_id: Option<Option<String>> = Some(None);
-        let mut device_id: Option<Option<String>> = Some(None);
-        let mut expire_date: Option<String> = None;
+        let mut device_id: Option<String> = None;
         let mut scope: Option<String> = None;
 
         let is_array = match d.datatype()? {
@@ -260,16 +253,8 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    5 => {
-                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
-                            d.skip()?;
-                            Some(None)
-                        } else {
-                            Some(Some(d.str()?.to_string()))
-                        }
-                    }
-                    6 => expire_date = Some(d.str()?.to_string()),
-                    7 => scope = Some(d.str()?.to_string()),
+                    5 => device_id = Some(d.str()?.to_string()),
+                    6 => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -303,15 +288,7 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "device_id" => {
-                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
-                            d.skip()?;
-                            Some(None)
-                        } else {
-                            Some(Some(d.str()?.to_string()))
-                        }
-                    }
-                    "expire_date" => expire_date = Some(d.str()?.to_string()),
+                    "device_id" => device_id = Some(d.str()?.to_string()),
                     "scope" => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
@@ -336,13 +313,12 @@ pub fn decode_authorize_user_response(
             },
             refresh_token: refresh_token.unwrap(),
             user_id: user_id.unwrap(),
-            device_id: device_id.unwrap(),
 
-            expire_date: if let Some(__x) = expire_date {
+            device_id: if let Some(__x) = device_id {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserResponse.expire_date (#6)".to_string(),
+                    "missing field AuthorizeUserResponse.device_id (#5)".to_string(),
                 ));
             },
 
@@ -350,7 +326,7 @@ pub fn decode_authorize_user_response(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserResponse.scope (#7)".to_string(),
+                    "missing field AuthorizeUserResponse.scope (#6)".to_string(),
                 ));
             },
         }

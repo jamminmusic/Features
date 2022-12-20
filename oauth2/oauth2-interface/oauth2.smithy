@@ -161,7 +161,7 @@ structure AuthorizeUserResponse {
 
   @n(6)
   @required
-  expire_date: String
+  device_id: String
 
   @n(7)
   @required
