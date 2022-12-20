@@ -53,13 +53,13 @@ impl GrantType {
                     // How to handle this one? User interaction Needed.
                     AuthUriBuilder::new().create_client().generate_auth_uri()
                 } else {
-                    AuthUriBuilder::new().create_client().generate_auth_uri()
+                    AuthUriBuilder::new().create_client().generate_device_auth_uri()
                 }
             },
             // Application Flow - User interaction with auth_uri not needed. Application as a client will pass client_id and secret for authentication.
             GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // Device Flow - User interaction with auth_uri not needed - device will authenticate with client_id and device_code.
-            GrantType::DeviceCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
+            GrantType::DeviceCode => AuthUriBuilder::new().create_client().generate_device_auth_uri(),
         };
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
         Ok(GetAuthUriResponse)
