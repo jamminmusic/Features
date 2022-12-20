@@ -43,22 +43,23 @@ pub enum GrantType {
 impl GrantType {
     pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result(GetAuthUriResponse, Error){
         let auth_uri = match self {
-            // User Flow - auth_uri needed.
+            // User Flow - User interaction auth_uri needed.
             GrantType::AuthorizationCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
-            // User Flow + Pkce - auth_uri needed and will contain code challenge. Most secure User Flow.
+            // User Flow + Pkce - User interaction auth_uri needed and will contain code challenge. Most secure User Flow.
             GrantType::Pkce => AuthUriBuilder::new().create_client().generate_pkce().generate_auth_uri_pkce(),
-            // Refresh Flow - If client was issued a secret auth_uri needed, otherwise auth_uri not needed. 
+            // Refresh Flow - If client was issued a secret User interaction auth_uri needed, otherwise User interaction auth_uri not needed. 
             GrantType::Refresh => {
                 if req.client_secret != None {
+                    // How to handle this one?
                     AuthUriBuilder::new().create_client().generate_auth_uri()
                 } else {
-                    Error
+                    AuthUriBuilder::new().create_client().generate_auth_uri()
                 }
             },
-            // Application Flow - auth_uri not needed. Application as a client will pass client_id and secret for authentication.
-            GrantType::ClientCredentials => Error,
-            // Device Flow - auth_uri not needed - device will authenticate with client_id and device_code.
-            GrantType::DeviceCode => Error,
+            // Application Flow - User interaction auth_uri not needed. Application as a client will pass client_id and secret for authentication.
+            GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri(),
+            // Device Flow - User interaction with auth_uri not needed - device will authenticate with client_id and device_code.
+            GrantType::DeviceCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
         };
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
         Ok(GetAuthUriResponse)
