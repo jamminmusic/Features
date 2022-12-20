@@ -118,7 +118,7 @@ impl Oauth2 for Oauth2Provider {
         // provider: String, grant_type: String, client_id: String, client_secret: String, 
         // auth_url: String, token_url: String, redirect_url: String, scope: String }
         // Enum Method Returns GetAuthUriResponse or Error
-        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unwrap().await;
+        let response = GrantType::from_str(GetAuthUriRequest.grant_type).get_auth_uri().unwrap().await;
         Ok(response)
     }
 
@@ -129,7 +129,7 @@ impl Oauth2 for Oauth2Provider {
     ) -> RpcResult<AuthorizeUserResponse> {
         // Request Struct - { provider: String, grant_type: String, auth_code: String, state: String }
         // Enum Method Returns AuthorizeUserResponse or Error
-        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unwrap().await;
+        let response = GrantType::from_str(GetAuthUriRequest.grant_type).authorize_user().unwrap().await;
         Ok(response)
     }
 
@@ -140,7 +140,7 @@ impl Oauth2 for Oauth2Provider {
     ) -> RpcResult<UnauthorizeUserResponse> {
         // Request Struct - { provider: String, user: String }
         // Enum Method Returns UnauthorizeUserResponse or Error
-        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unwrap().await;
+        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
         Ok(response)
     }
 }
