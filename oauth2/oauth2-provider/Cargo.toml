@@ -5,14 +5,15 @@ edition = "2021"
 resolver = "2"
 
 [dependencies]
-async-trait = "0.1"
-wasmbus-rpc = "0.11"
-wasmcloud-interface-httpserver = "0.8"
+async-trait = "0.1.60"
+wasmbus-rpc = "0.11.2"
+wasmcloud-interface-httpserver = "0.8.2"
 oauth2-interface = { path = "../oauth2-interface/rust", version = "0.1.0" }
+strum = { version = "0.24.1", features = ["derive"] }
 
 # test dependencies
 [dev-dependencies]
-wasmcloud-test-util = "0.6"
+wasmcloud-test-util = "0.6.4"
 tokio = { version = "1", features = ["full"] }
 
 [[bin]]
