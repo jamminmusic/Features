@@ -73,14 +73,6 @@ impl AuthUriBuilder {
 
 }
 
-
-// Use NATS Provider HERE
-async fn client_redirect(client: BasicClient, auth_url: url::Url) {
-    // Once the user has been redirected to the redirect URL, you'll have access to the
-    // authorization code. For security reasons, your code should verify that the `state`
-    // parameter returned by the server matches `csrf_state`.
-}
-
 async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_response: ){
     if csrf_state == csrf_response {
         // OK
