@@ -48,7 +48,7 @@ impl GrantType {
             GrantType::AuthorizationCode => AuthUriBuilder::new().create_client().set_redirect_uri().generate_auth_uri(),
             // User Flow + Pkce - User interaction with auth_uri needed and will contain code challenge. Most secure User Flow.
             // https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
-            GrantType::Pkce => AuthUriBuilder::new().create_client().generate_pkce().set_redirect_uri().generate_auth_uri_pkce(),
+            GrantType::Pkce => AuthUriBuilder::new().create_client().set_redirect_uri().generate_pkce().generate_auth_uri_pkce(),
             // Refresh Flow - If client was issued a secret User interaction with auth_uri needed, otherwise User interaction with auth_uri not needed. 
             // https://docs.rs/oauth2/4.3.0/oauth2/trait.TokenResponse.html#tymethod.refresh_token
             GrantType::Refresh => AuthUriBuilder::new().create_client().generate_auth_uri(),
