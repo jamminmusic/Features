@@ -33,6 +33,7 @@ impl AuthUriBuilder {
             AuthUrl::new(req.auth_url.unwrap()).expect("Invalid authorization endpoint URL"),
             Some(TokenUrl::new(req.token_url.unwrap()).expect("Invalid authorization endpoint URL")),
         )
+        // Should setting redirect URI be a separate Builder function?
         .set_redirect_uri(
             RedirectUrl::new(req.auth_url.unwrap()).expect("Invalid redirect URL"),
         );

@@ -50,7 +50,7 @@ impl GrantType {
             // Refresh Flow - If client was issued a secret User interaction with auth_uri needed, otherwise User interaction with auth_uri not needed. 
             GrantType::Refresh => {
                 if req.client_secret != None {
-                    // How to handle this one?
+                    // How to handle this one? User interaction Needed.
                     AuthUriBuilder::new().create_client().generate_auth_uri()
                 } else {
                     AuthUriBuilder::new().create_client().generate_auth_uri()
