@@ -41,7 +41,7 @@ pub enum GrantType {
 }
 
 impl GrantType {
-    pub async fn get_auth_uri(&self, grant_type: String) -> Result(String, Error){
+    pub async fn get_auth_uri(&self, grant_type: String) -> Result(GetAuthUriResponse, Error){
         let auth_uri = match self {
             // User Flow - auth_uri needed.
             GrantType::AuthorizationCode => "Define functions to call",
@@ -54,9 +54,10 @@ impl GrantType {
             // Device Flow - auth_uri not needed - device will authenticate with client_id and device_code.
             GrantType::DeviceCode => "Define functions to call",
         };
-        Ok(auth_uri)
+        // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
+        Ok(GetAuthUriResponse)
     }
-    pub async fn authorize_user(&self, req: String) -> Result(String, Error) {
+    pub async fn authorize_user(&self, req: String) -> Result(AuthorizeUserResponse, Error) {
         let token = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
@@ -69,9 +70,10 @@ impl GrantType {
             // 
             GrantType::DeviceCode => "Define functions to call",
         };
-        Ok(token)
+        // Response Struct - { success: boolean, error: String, token: String, user_id: String } 
+        Ok(AuthorizeUserResponse)
     }
-    pub async fn unauthorize_user(&self, req: String) -> Result(String, Error) {
+    pub async fn unauthorize_user(&self, req: String) -> Result(UnauthorizeUserResponse, Error) {
         let status = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
@@ -84,7 +86,8 @@ impl GrantType {
             // 
             GrantType::DeviceCode => "Define functions to call",
         };
-        Ok(status)
+        // Response Struct - { success: boolean, error: String } 
+        Ok(UnauthorizeUserResponse)
     }
 }
 
@@ -105,17 +108,12 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &GetAuthUriRequest,
     ) -> RpcResult<GetAuthUriResponse> {
-
-        GrantType::from_str(GetAuthUriRequest.grant_type)
-
-
-        let x = GetAuthUriResponse {
-            success: true,
-            error: Some("words".to_string()),
-            uri: "words".to_string(),
-            csrf_state: "words".to_string(),
-        };
-        Ok(x)
+        // Request Struct - { 
+        // provider: String, grant_type: String, client_id: String, client_secret: String, 
+        // auth_url: String, token_url: String, redirect_url: String, scope: String }
+        // Enum Method Returns GetAuthUriResponse or Error
+        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unwrap().await;
+        Ok(response)
     }
 
     async fn authorize_user(
@@ -123,16 +121,10 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &AuthorizeUserRequest,
     ) -> RpcResult<AuthorizeUserResponse> {
-
-        GrantType::from_str(GetAuthUriRequest.grant_type)
-
-        let x = AuthorizeUserResponse {
-            success: true,
-            error: Some("words".to_string()),
-            token: "words".to_string(),
-            user_id: "words".to_string(),
-        };
-        Ok(x)
+        // Request Struct - { provider: String, grant_type: String, auth_code: String, state: String }
+        // Enum Method Returns AuthorizeUserResponse or Error
+        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unwrap().await;
+        Ok(response)
     }
 
     async fn unauthorize_user(
@@ -140,13 +132,9 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &UnauthorizeUserRequest,
     ) -> RpcResult<UnauthorizeUserResponse> {
-
-        GrantType::from_str(GetAuthUriRequest.grant_type)
-        
-        let x = UnauthorizeUserResponse {
-            success: true,
-            error: Some("words".to_string()),
-        };
-        Ok(x)
+        // Request Struct - { provider: String, user: String }
+        // Enum Method Returns UnauthorizeUserResponse or Error
+        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unwrap().await;
+        Ok(response)
     }
 }
