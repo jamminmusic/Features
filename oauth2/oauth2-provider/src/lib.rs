@@ -31,18 +31,28 @@ async fn generate_pkce() -> Result<(PkceCodeChallenge, PkceCodeVerifier), Error>
     Ok((pkce_code_challenge, pkce_code_verifier))
 }
 
-async fn generate_auth_url(
-    client: BasicClient,
-    pkce_code_challenge: Option<PkceCodeChallenge>,
-    config: TBD,
-) -> Result<(url::Url, CsrfToken), Error> {
-    let (authorize_url, csrf_state) = client
-        .authorize_url(CsrfToken::new_random)
-        .add_scope(Scope::new(config.scope.unwrap()))
-        // Use builder pattern here to make set pkce an optional chained method
-        .set_pkce_challenge(pkce_code_challenge.unwrap())
-        .url();
-    Ok((authorize_url, csrf_state))
+#[derive(Default)]
+pub struct AuthUriBuilder {
+    // Probably lots of optional fields.
+    client: &BasicClient,
+    pkce_code_challenge: Option<&PkceCodeChallenge>,
+    scope: &GetAuthUriRequest.scope
+}
+
+impl AuthUriBuilder {
+    async fn generate_auth_uri(
+        client: &BasicClient,
+        pkce_code_challenge: Option<&PkceCodeChallenge>,
+        scope: &GetAuthUriRequest.scope
+    ) -> Result<(url::Url, CsrfToken), Error> {
+        let (authorize_url, csrf_state) = client
+            .authorize_url(CsrfToken::new_random)
+            .add_scope(Scope::new(config.scope.unwrap()))
+            // Use builder pattern here to make set pkce an optional chained method
+            .set_pkce_challenge(pkce_code_challenge.unwrap())
+            .url();
+        Ok((authorize_url, csrf_state))
+    }
 }
 
 // Use NATS Provider HERE
