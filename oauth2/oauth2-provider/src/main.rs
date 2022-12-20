@@ -1,4 +1,4 @@
-//! oauth2 capability provider
+//! Oauth2 capability provider
 //!
 //!
 use oauth2_interface::{
@@ -21,11 +21,11 @@ use wasmbus_rpc::provider::prelude::*;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     provider_main(Oauth2Provider::default(), Some("Oauth2".to_string()))?;
 
-    eprintln!("oauth2 provider exiting");
+    eprintln!("Oauth2 provider exiting");
     Ok(())
 }
 
-// available oauth2 Grant Types - Legacy Grant Types not supported
+// available Oauth2 Grant Types - Legacy Grant Types not supported
 #[derive(Clone, Deserialize, Debug, PartialEq, EnumString)]
 pub enum GrantType {
     #[strum(ascii_case_insensitive)]
@@ -43,11 +43,11 @@ pub enum GrantType {
 impl GrantType {
     pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result(GetAuthUriResponse, Error){
         let auth_uri = match self {
-            // User Flow - User interaction auth_uri needed.
+            // User Flow - User interaction with auth_uri needed.
             GrantType::AuthorizationCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
-            // User Flow + Pkce - User interaction auth_uri needed and will contain code challenge. Most secure User Flow.
+            // User Flow + Pkce - User interaction with auth_uri needed and will contain code challenge. Most secure User Flow.
             GrantType::Pkce => AuthUriBuilder::new().create_client().generate_pkce().generate_auth_uri_pkce(),
-            // Refresh Flow - If client was issued a secret User interaction auth_uri needed, otherwise User interaction auth_uri not needed. 
+            // Refresh Flow - If client was issued a secret User interaction with auth_uri needed, otherwise User interaction with auth_uri not needed. 
             GrantType::Refresh => {
                 if req.client_secret != None {
                     // How to handle this one?
@@ -56,7 +56,7 @@ impl GrantType {
                     AuthUriBuilder::new().create_client().generate_auth_uri()
                 }
             },
-            // Application Flow - User interaction auth_uri not needed. Application as a client will pass client_id and secret for authentication.
+            // Application Flow - User interaction with auth_uri not needed. Application as a client will pass client_id and secret for authentication.
             GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // Device Flow - User interaction with auth_uri not needed - device will authenticate with client_id and device_code.
             GrantType::DeviceCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
@@ -98,7 +98,7 @@ impl GrantType {
     }
 }
 
-/// oauth2 capability provider implementation
+/// Oauth2 capability provider implementation
 #[derive(Default, Clone, Provider)]
 #[services(Oauth2)]
 struct Oauth2Provider {}
@@ -107,7 +107,7 @@ struct Oauth2Provider {}
 impl ProviderDispatch for Oauth2Provider {}
 impl ProviderHandler for Oauth2Provider {}
 
-/// Handle Factorial methods
+/// Handle Oauth2 methods
 #[async_trait]
 impl Oauth2 for Oauth2Provider {
     async fn get_auth_uri(
