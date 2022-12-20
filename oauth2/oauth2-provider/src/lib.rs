@@ -12,21 +12,20 @@ use wasmbus_rpc::provider::prelude::*;
 
 
 // client origin must be passed in here
-async fn create_client(config: TBD , client_origin: String) -> RpcResult<BasicClient> {
+async fn create_client(req: &GetAuthUriRequest) -> Result<BasicClient, Error> {
     let client = BasicClient::new(
-        ClientId::new(config.client_id.unwrap()),
-        Some(ClientSecret::new(config.client_secret.unwrap())),
-        AuthUrl::new(config.auth_url.unwrap()).expect("Invalid authorization endpoint URL"),
-        Some(TokenUrl::new(config.token_url.unwrap()).expect("Invalid authorization endpoint URL")),
+        ClientId::new(req.client_id.unwrap()),
+        Some(ClientSecret::new(req.client_secret.unwrap())),
+        AuthUrl::new(req.auth_url.unwrap()).expect("Invalid authorization endpoint URL"),
+        Some(TokenUrl::new(req.token_url.unwrap()).expect("Invalid authorization endpoint URL")),
     )
-    // DO NOT HARDCODE URI HERE - THIS IS PASSED IN
     .set_redirect_uri(
-        RedirectUrl::new("http://local.jammin.dev".to_string()).expect("Invalid redirect URL"),
+        RedirectUrl::new(req.auth_url.unwrap()).expect("Invalid redirect URL"),
     );
     Ok(client)
 }
 
-async fn generate_pkce() -> RpcResult<(PkceCodeChallenge, PkceCodeVerifier)> {
+async fn generate_pkce() -> Result<(PkceCodeChallenge, PkceCodeVerifier), Error> {
     let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
     // what to return?
     Ok((pkce_code_challenge, pkce_code_verifier))
@@ -36,10 +35,11 @@ async fn generate_auth_url(
     client: BasicClient,
     pkce_code_challenge: Option<PkceCodeChallenge>,
     config: TBD,
-) -> RpcResult<(url::Url, CsrfToken)> {
+) -> Result<(url::Url, CsrfToken), Error> {
     let (authorize_url, csrf_state) = client
         .authorize_url(CsrfToken::new_random)
         .add_scope(Scope::new(config.scope.unwrap()))
+        // Use builder pattern here to make set pkce an optional chained method
         .set_pkce_challenge(pkce_code_challenge.unwrap())
         .url();
     Ok((authorize_url, csrf_state))
@@ -53,18 +53,18 @@ async fn client_redirect(client: BasicClient, auth_url: url::Url) {
 }
 
 async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_response: ){
-//     if csrf_state == csrf_response {
-//         // OK
-//     } else {
-//         // Error
-//     }
+    if csrf_state == csrf_response {
+        // OK
+    } else {
+        // Error
+    }
 }
 
 async fn token_exchange(authorization_code){
-//     let token_result = client
-//         .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
-//         // Set the PKCE code verifier.
-//         .set_pkce_verifier(pkce_verifier)
-//         .request_async(async_http_client)
-//         .await?;
+    let token_result = client
+        .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
+        // Set the PKCE code verifier.
+        .set_pkce_verifier(pkce_verifier)
+        .request_async(async_http_client)
+        .await?;
 }

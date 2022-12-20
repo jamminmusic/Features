@@ -41,10 +41,12 @@ pub enum GrantType {
 }
 
 impl GrantType {
-    pub async fn get_auth_uri(&self, grant_type: String) -> Result(GetAuthUriResponse, Error){
+    pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result(GetAuthUriResponse, Error){
         let auth_uri = match self {
             // User Flow - auth_uri needed.
-            GrantType::AuthorizationCode => "Define functions to call",
+            GrantType::AuthorizationCode => {
+                create_client(req)
+            },
             // User Flow + Pkce - auth_uri needed and will contain code challenge. Most secure User Flow.
             GrantType::Pkce => "Define functions to call",
             // Refresh Flow - If client was issued a secret auth_uri needed, otherwise auth_uri not needed. 
@@ -57,7 +59,7 @@ impl GrantType {
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
         Ok(GetAuthUriResponse)
     }
-    pub async fn authorize_user(&self, req: String) -> Result(AuthorizeUserResponse, Error) {
+    pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result(AuthorizeUserResponse, Error) {
         let token = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
@@ -73,7 +75,7 @@ impl GrantType {
         // Response Struct - { success: boolean, error: String, token: String, user_id: String } 
         Ok(AuthorizeUserResponse)
     }
-    pub async fn unauthorize_user(&self, req: String) -> Result(UnauthorizeUserResponse, Error) {
+    pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result(UnauthorizeUserResponse, Error) {
         let status = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
