@@ -46,7 +46,7 @@ impl GrantType {
             // User Flow - auth_uri needed.
             GrantType::AuthorizationCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // User Flow + Pkce - auth_uri needed and will contain code challenge. Most secure User Flow.
-            GrantType::Pkce => AuthUriBuilder::new().create_client().generate_auth_uri_pkce(),
+            GrantType::Pkce => AuthUriBuilder::new().create_client().generate_pkce().generate_auth_uri_pkce(),
             // Refresh Flow - If client was issued a secret auth_uri needed, otherwise auth_uri not needed. 
             GrantType::Refresh => {
                 if req.client_secret != None {
