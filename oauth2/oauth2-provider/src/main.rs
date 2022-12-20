@@ -76,7 +76,7 @@ impl GrantType {
             // 
             GrantType::DeviceCode => "Define functions to call",
         };
-        // Response Struct - { success: boolean, error: String, token: String, user_id: String } 
+        // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, user_id: String, device_id: String, device_id: String, scope: String } 
         Ok(AuthorizeUserResponse)
     }
     pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result(UnauthorizeUserResponse, Error) {
@@ -115,7 +115,7 @@ impl Oauth2 for Oauth2Provider {
         _req: &GetAuthUriRequest,
     ) -> RpcResult<GetAuthUriResponse> {
         // Request Struct - { 
-        // provider: String, grant_type: String, client_id: String, client_secret: String, 
+        // provider: String, grant_type: String, client_id: String, device_code: String, client_secret: String, 
         // auth_url: String, token_url: String, redirect_url: String, scope: String }
         // Enum Method Returns GetAuthUriResponse or Error
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).get_auth_uri().unwrap().await;
@@ -127,7 +127,7 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &AuthorizeUserRequest,
     ) -> RpcResult<AuthorizeUserResponse> {
-        // Request Struct - { provider: String, grant_type: String, auth_code: String, state: String }
+        // Request Struct - { provider: String, grant_type: String, auth_code: String, state: String, csrf_state: String }
         // Enum Method Returns AuthorizeUserResponse or Error
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).authorize_user().unwrap().await;
         Ok(response)
@@ -138,7 +138,7 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &UnauthorizeUserRequest,
     ) -> RpcResult<UnauthorizeUserResponse> {
-        // Request Struct - { provider: String, user: String }
+        // Request Struct - { provider: String, user: String, device_id: String }
         // Enum Method Returns UnauthorizeUserResponse or Error
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
         Ok(response)

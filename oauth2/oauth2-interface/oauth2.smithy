@@ -48,22 +48,24 @@ structure GetAuthUriRequest {
 
   @n(3)
   @sensitive
-  @required
-  client_secret: String
+  device_code: String
 
   @n(4)
-  @required
-  auth_url: String
+  @sensitive
+  client_secret: String
 
   @n(5)
   @required
-  token_url: String
+  auth_url: String
 
   @n(6)
   @required
-  redirect_url: String
+  token_url: String
 
   @n(7)
+  redirect_url: String
+
+  @n(8)
   @required
   scope: String
 }
@@ -83,7 +85,6 @@ structure GetAuthUriResponse {
 
   @n(2)
   @sensitive
-  @required
   uri: String
 
   // store state in SurrealDB or KV to compare later
@@ -128,6 +129,7 @@ structure AuthorizeUserRequest {
   @sensitive
   @required
   csrf_state: String
+
 }
 
 structure AuthorizeUserResponse {
@@ -143,12 +145,27 @@ structure AuthorizeUserResponse {
   @n(2)
   @sensitive
   @required
-  token: String
+  access_token: String
 
   @n(3)
   @sensitive
-  @required
+  refresh_token: String
+
+  @n(4)
+  @sensitive
   user_id: String
+
+  @n(5)
+  @sensitive
+  device_id: String
+
+  @n(6)
+  @required
+  expire_date: String
+
+  @n(7)
+  @required
+  scope: String
 }
 
 
@@ -164,8 +181,10 @@ structure UnauthorizeUserRequest {
   provider: String
 
   @n(1)
-  @required
-  user: String
+  user_id: String
+
+  @n(2)
+  device_id: String
 }
 
 structure UnauthorizeUserResponse {

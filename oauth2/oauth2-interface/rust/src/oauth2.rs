@@ -155,9 +155,17 @@ pub struct AuthorizeUserResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
     #[serde(default)]
-    pub token: String,
+    pub access_token: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub refresh_token: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_id: Option<String>,
     #[serde(default)]
-    pub user_id: String,
+    pub expire_date: String,
+    #[serde(default)]
+    pub scope: String,
 }
 
 // Encode AuthorizeUserResponse as CBOR and append to output stream
@@ -170,15 +178,31 @@ pub fn encode_authorize_user_response<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(4)?;
+    e.array(8)?;
     e.bool(val.success)?;
     if let Some(val) = val.error.as_ref() {
         e.str(val)?;
     } else {
         e.null()?;
     }
-    e.str(&val.token)?;
-    e.str(&val.user_id)?;
+    e.str(&val.access_token)?;
+    if let Some(val) = val.refresh_token.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    if let Some(val) = val.user_id.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    if let Some(val) = val.device_id.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    e.str(&val.expire_date)?;
+    e.str(&val.scope)?;
     Ok(())
 }
 
@@ -190,8 +214,12 @@ pub fn decode_authorize_user_response(
     let __result = {
         let mut success: Option<bool> = None;
         let mut error: Option<Option<String>> = Some(None);
-        let mut token: Option<String> = None;
-        let mut user_id: Option<String> = None;
+        let mut access_token: Option<String> = None;
+        let mut refresh_token: Option<Option<String>> = Some(None);
+        let mut user_id: Option<Option<String>> = Some(None);
+        let mut device_id: Option<Option<String>> = Some(None);
+        let mut expire_date: Option<String> = None;
+        let mut scope: Option<String> = None;
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -215,8 +243,33 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    2 => token = Some(d.str()?.to_string()),
-                    3 => user_id = Some(d.str()?.to_string()),
+                    2 => access_token = Some(d.str()?.to_string()),
+                    3 => {
+                        refresh_token = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    4 => {
+                        user_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    5 => {
+                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    6 => expire_date = Some(d.str()?.to_string()),
+                    7 => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -233,8 +286,33 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "token" => token = Some(d.str()?.to_string()),
-                    "user_id" => user_id = Some(d.str()?.to_string()),
+                    "access_token" => access_token = Some(d.str()?.to_string()),
+                    "refresh_token" => {
+                        refresh_token = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "user_id" => {
+                        user_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "device_id" => {
+                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "expire_date" => expire_date = Some(d.str()?.to_string()),
+                    "scope" => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -249,19 +327,30 @@ pub fn decode_authorize_user_response(
             },
             error: error.unwrap(),
 
-            token: if let Some(__x) = token {
+            access_token: if let Some(__x) = access_token {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserResponse.token (#2)".to_string(),
+                    "missing field AuthorizeUserResponse.access_token (#2)".to_string(),
+                ));
+            },
+            refresh_token: refresh_token.unwrap(),
+            user_id: user_id.unwrap(),
+            device_id: device_id.unwrap(),
+
+            expire_date: if let Some(__x) = expire_date {
+                __x
+            } else {
+                return Err(RpcError::Deser(
+                    "missing field AuthorizeUserResponse.expire_date (#6)".to_string(),
                 ));
             },
 
-            user_id: if let Some(__x) = user_id {
+            scope: if let Some(__x) = scope {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserResponse.user_id (#3)".to_string(),
+                    "missing field AuthorizeUserResponse.scope (#7)".to_string(),
                 ));
             },
         }
@@ -277,14 +366,16 @@ pub struct GetAuthUriRequest {
     pub grant_type: String,
     #[serde(default)]
     pub client_id: String,
-    #[serde(default)]
-    pub client_secret: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_code: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub client_secret: Option<String>,
     #[serde(default)]
     pub auth_url: String,
     #[serde(default)]
     pub token_url: String,
-    #[serde(default)]
-    pub redirect_url: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub redirect_url: Option<String>,
     #[serde(default)]
     pub scope: String,
 }
@@ -299,14 +390,27 @@ pub fn encode_get_auth_uri_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(8)?;
+    e.array(9)?;
     e.str(&val.provider)?;
     e.str(&val.grant_type)?;
     e.str(&val.client_id)?;
-    e.str(&val.client_secret)?;
+    if let Some(val) = val.device_code.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    if let Some(val) = val.client_secret.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
     e.str(&val.auth_url)?;
     e.str(&val.token_url)?;
-    e.str(&val.redirect_url)?;
+    if let Some(val) = val.redirect_url.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
     e.str(&val.scope)?;
     Ok(())
 }
@@ -320,10 +424,11 @@ pub fn decode_get_auth_uri_request(
         let mut provider: Option<String> = None;
         let mut grant_type: Option<String> = None;
         let mut client_id: Option<String> = None;
-        let mut client_secret: Option<String> = None;
+        let mut device_code: Option<Option<String>> = Some(None);
+        let mut client_secret: Option<Option<String>> = Some(None);
         let mut auth_url: Option<String> = None;
         let mut token_url: Option<String> = None;
-        let mut redirect_url: Option<String> = None;
+        let mut redirect_url: Option<Option<String>> = Some(None);
         let mut scope: Option<String> = None;
 
         let is_array = match d.datatype()? {
@@ -342,11 +447,33 @@ pub fn decode_get_auth_uri_request(
                     0 => provider = Some(d.str()?.to_string()),
                     1 => grant_type = Some(d.str()?.to_string()),
                     2 => client_id = Some(d.str()?.to_string()),
-                    3 => client_secret = Some(d.str()?.to_string()),
-                    4 => auth_url = Some(d.str()?.to_string()),
-                    5 => token_url = Some(d.str()?.to_string()),
-                    6 => redirect_url = Some(d.str()?.to_string()),
-                    7 => scope = Some(d.str()?.to_string()),
+                    3 => {
+                        device_code = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    4 => {
+                        client_secret = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    5 => auth_url = Some(d.str()?.to_string()),
+                    6 => token_url = Some(d.str()?.to_string()),
+                    7 => {
+                        redirect_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    8 => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -357,10 +484,32 @@ pub fn decode_get_auth_uri_request(
                     "provider" => provider = Some(d.str()?.to_string()),
                     "grant_type" => grant_type = Some(d.str()?.to_string()),
                     "client_id" => client_id = Some(d.str()?.to_string()),
-                    "client_secret" => client_secret = Some(d.str()?.to_string()),
+                    "device_code" => {
+                        device_code = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "client_secret" => {
+                        client_secret = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     "auth_url" => auth_url = Some(d.str()?.to_string()),
                     "token_url" => token_url = Some(d.str()?.to_string()),
-                    "redirect_url" => redirect_url = Some(d.str()?.to_string()),
+                    "redirect_url" => {
+                        redirect_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     "scope" => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
@@ -390,20 +539,14 @@ pub fn decode_get_auth_uri_request(
                     "missing field GetAuthUriRequest.client_id (#2)".to_string(),
                 ));
             },
-
-            client_secret: if let Some(__x) = client_secret {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.client_secret (#3)".to_string(),
-                ));
-            },
+            device_code: device_code.unwrap(),
+            client_secret: client_secret.unwrap(),
 
             auth_url: if let Some(__x) = auth_url {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.auth_url (#4)".to_string(),
+                    "missing field GetAuthUriRequest.auth_url (#5)".to_string(),
                 ));
             },
 
@@ -411,23 +554,16 @@ pub fn decode_get_auth_uri_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.token_url (#5)".to_string(),
+                    "missing field GetAuthUriRequest.token_url (#6)".to_string(),
                 ));
             },
-
-            redirect_url: if let Some(__x) = redirect_url {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.redirect_url (#6)".to_string(),
-                ));
-            },
+            redirect_url: redirect_url.unwrap(),
 
             scope: if let Some(__x) = scope {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.scope (#7)".to_string(),
+                    "missing field GetAuthUriRequest.scope (#8)".to_string(),
                 ));
             },
         }
@@ -441,8 +577,8 @@ pub struct GetAuthUriResponse {
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
-    #[serde(default)]
-    pub uri: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub uri: Option<String>,
     #[serde(default)]
     pub csrf_state: String,
 }
@@ -464,7 +600,11 @@ where
     } else {
         e.null()?;
     }
-    e.str(&val.uri)?;
+    if let Some(val) = val.uri.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
     e.str(&val.csrf_state)?;
     Ok(())
 }
@@ -477,7 +617,7 @@ pub fn decode_get_auth_uri_response(
     let __result = {
         let mut success: Option<bool> = None;
         let mut error: Option<Option<String>> = Some(None);
-        let mut uri: Option<String> = None;
+        let mut uri: Option<Option<String>> = Some(None);
         let mut csrf_state: Option<String> = None;
 
         let is_array = match d.datatype()? {
@@ -502,7 +642,14 @@ pub fn decode_get_auth_uri_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    2 => uri = Some(d.str()?.to_string()),
+                    2 => {
+                        uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     3 => csrf_state = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
@@ -520,7 +667,14 @@ pub fn decode_get_auth_uri_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "uri" => uri = Some(d.str()?.to_string()),
+                    "uri" => {
+                        uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     "csrf_state" => csrf_state = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
@@ -535,14 +689,7 @@ pub fn decode_get_auth_uri_response(
                 ));
             },
             error: error.unwrap(),
-
-            uri: if let Some(__x) = uri {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field GetAuthUriResponse.uri (#2)".to_string(),
-                ));
-            },
+            uri: uri.unwrap(),
 
             csrf_state: if let Some(__x) = csrf_state {
                 __x
@@ -559,8 +706,10 @@ pub fn decode_get_auth_uri_response(
 pub struct UnauthorizeUserRequest {
     #[serde(default)]
     pub provider: String,
-    #[serde(default)]
-    pub user: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub user_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_id: Option<String>,
 }
 
 // Encode UnauthorizeUserRequest as CBOR and append to output stream
@@ -573,9 +722,18 @@ pub fn encode_unauthorize_user_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(2)?;
+    e.array(3)?;
     e.str(&val.provider)?;
-    e.str(&val.user)?;
+    if let Some(val) = val.user_id.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    if let Some(val) = val.device_id.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
     Ok(())
 }
 
@@ -586,7 +744,8 @@ pub fn decode_unauthorize_user_request(
 ) -> Result<UnauthorizeUserRequest, RpcError> {
     let __result = {
         let mut provider: Option<String> = None;
-        let mut user: Option<String> = None;
+        let mut user_id: Option<Option<String>> = Some(None);
+        let mut device_id: Option<Option<String>> = Some(None);
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -602,7 +761,23 @@ pub fn decode_unauthorize_user_request(
             for __i in 0..(len as usize) {
                 match __i {
                     0 => provider = Some(d.str()?.to_string()),
-                    1 => user = Some(d.str()?.to_string()),
+                    1 => {
+                        user_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    2 => {
+                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+
                     _ => d.skip()?,
                 }
             }
@@ -611,7 +786,22 @@ pub fn decode_unauthorize_user_request(
             for __i in 0..(len as usize) {
                 match d.str()? {
                     "provider" => provider = Some(d.str()?.to_string()),
-                    "user" => user = Some(d.str()?.to_string()),
+                    "user_id" => {
+                        user_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "device_id" => {
+                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     _ => d.skip()?,
                 }
             }
@@ -624,14 +814,8 @@ pub fn decode_unauthorize_user_request(
                     "missing field UnauthorizeUserRequest.provider (#0)".to_string(),
                 ));
             },
-
-            user: if let Some(__x) = user {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field UnauthorizeUserRequest.user (#1)".to_string(),
-                ));
-            },
+            user_id: user_id.unwrap(),
+            device_id: device_id.unwrap(),
         }
     };
     Ok(__result)
