@@ -44,10 +44,13 @@ impl GrantType {
     pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result(GetAuthUriResponse, Error){
         let auth_uri = match self {
             // User Flow - User interaction with auth_uri needed.
+            //Just remove PKCE code from https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
             GrantType::AuthorizationCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // User Flow + Pkce - User interaction with auth_uri needed and will contain code challenge. Most secure User Flow.
+            // https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
             GrantType::Pkce => AuthUriBuilder::new().create_client().generate_pkce().generate_auth_uri_pkce(),
             // Refresh Flow - If client was issued a secret User interaction with auth_uri needed, otherwise User interaction with auth_uri not needed. 
+            // https://docs.rs/oauth2/4.3.0/oauth2/trait.TokenResponse.html#tymethod.refresh_token
             GrantType::Refresh => {
                 if req.client_secret != None {
                     // How to handle this one? User interaction Needed.
@@ -57,8 +60,10 @@ impl GrantType {
                 }
             },
             // Application Flow - User interaction with auth_uri not needed. Application as a client will pass client_id and secret for authentication.
+            // https://docs.rs/oauth2/4.3.0/oauth2/#client-credentials-grant
             GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // Device Flow - User interaction with auth_uri not needed - device will authenticate with client_id and device_code.
+            // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
             GrantType::DeviceCode => AuthUriBuilder::new().create_client().generate_device_auth_uri(),
         };
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
