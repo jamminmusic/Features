@@ -10,27 +10,6 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use wasmbus_rpc::provider::prelude::*;
 
-
-// client origin must be passed in here
-async fn create_client(req: &GetAuthUriRequest) -> Result<BasicClient, Error> {
-    let client = BasicClient::new(
-        ClientId::new(req.client_id.unwrap()),
-        Some(ClientSecret::new(req.client_secret.unwrap())),
-        AuthUrl::new(req.auth_url.unwrap()).expect("Invalid authorization endpoint URL"),
-        Some(TokenUrl::new(req.token_url.unwrap()).expect("Invalid authorization endpoint URL")),
-    )
-    .set_redirect_uri(
-        RedirectUrl::new(req.auth_url.unwrap()).expect("Invalid redirect URL"),
-    );
-    Ok(client)
-}
-
-async fn generate_pkce() -> Result<(PkceCodeChallenge, PkceCodeVerifier), Error> {
-    let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
-    // what to return?
-    Ok((pkce_code_challenge, pkce_code_verifier))
-}
-
 #[derive(Default)]
 pub struct AuthUriBuilder {
     // Probably lots of optional fields.
@@ -46,38 +25,54 @@ impl AuthUriBuilder {
             bars: 0,
         }
     }
-    fn set_authorize_url(mut self, foos: usize) -> FooBuilder {
-        self.foos = foos;
-        self
+
+    fn create_client(req: &GetAuthUriRequest) -> Result<BasicClient, Error> {
+        let client = BasicClient::new(
+            ClientId::new(req.client_id.unwrap()),
+            Some(ClientSecret::new(req.client_secret.unwrap())),
+            AuthUrl::new(req.auth_url.unwrap()).expect("Invalid authorization endpoint URL"),
+            Some(TokenUrl::new(req.token_url.unwrap()).expect("Invalid authorization endpoint URL")),
+        )
+        .set_redirect_uri(
+            RedirectUrl::new(req.auth_url.unwrap()).expect("Invalid redirect URL"),
+        );
+        Ok(client)
     }
-    fn set_scope(mut self, bars: usize) -> FooBuilder {
-        self.bars = bars;
-        self
+
+    fn generate_pkce() -> Result<(PkceCodeChallenge, PkceCodeVerifier), Error> {
+        let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
+        // what to return?
+        Ok((pkce_code_challenge, pkce_code_verifier))
     }
-    fn set_pkce(mut self, bars: usize) -> FooBuilder {
-        self.bars = bars;
-        self
+
+    fn generate_auth_uri(
+        client: &BasicClient,
+        pkce_code_challenge: Option<&PkceCodeChallenge>,
+        scope: &GetAuthUriRequest.scope
+    ) -> Result<(url::Url, CsrfToken), Error> {
+        let (authorize_url, csrf_state) = client
+            .authorize_url(CsrfToken::new_random)
+            .add_scope(Scope::new(config.scope.unwrap()))
+            .url();
+        Ok((authorize_url, csrf_state))
     }
-    fn build(&self) -> Foo {
-        Foo {
-            value: self.foos + self.bars,
-        }
+
+    fn generate_auth_uri_pkce(
+        client: &BasicClient,
+        pkce_code_challenge: Option<&PkceCodeChallenge>,
+        scope: &GetAuthUriRequest.scope
+    ) -> Result<(url::Url, CsrfToken), Error> {
+        let (authorize_url, csrf_state) = client
+            .authorize_url(CsrfToken::new_random)
+            .add_scope(Scope::new(config.scope.unwrap()))
+            // Use builder pattern here to make set pkce an optional chained method
+            .set_pkce_challenge(pkce_code_challenge.unwrap())
+            .url();
+        Ok((authorize_url, csrf_state))
     }
+
 }
 
-async fn generate_auth_uri(
-    client: &BasicClient,
-    pkce_code_challenge: Option<&PkceCodeChallenge>,
-    scope: &GetAuthUriRequest.scope
-) -> Result<(url::Url, CsrfToken), Error> {
-    let (authorize_url, csrf_state) = client
-        .authorize_url(CsrfToken::new_random)
-        .add_scope(Scope::new(config.scope.unwrap()))
-        // Use builder pattern here to make set pkce an optional chained method
-        .set_pkce_challenge(pkce_code_challenge.unwrap())
-        .url();
-    Ok((authorize_url, csrf_state))
-}
 
 // Use NATS Provider HERE
 async fn client_redirect(client: BasicClient, auth_url: url::Url) {

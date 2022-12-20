@@ -44,11 +44,17 @@ impl GrantType {
     pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result(GetAuthUriResponse, Error){
         let auth_uri = match self {
             // User Flow - auth_uri needed.
-            GrantType::AuthorizationCode => AuthUriBuilder::new(),
+            GrantType::AuthorizationCode => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // User Flow + Pkce - auth_uri needed and will contain code challenge. Most secure User Flow.
-            GrantType::Pkce => AuthUriBuilder::new(),
+            GrantType::Pkce => AuthUriBuilder::new().create_client().generate_auth_uri_pkce(),
             // Refresh Flow - If client was issued a secret auth_uri needed, otherwise auth_uri not needed. 
-            GrantType::Refresh => AuthUriBuilder::new(),
+            GrantType::Refresh => {
+                if req.client_secret != None {
+                    AuthUriBuilder::new().create_client().generate_auth_uri()
+                } else {
+                    Error
+                }
+            },
             // Application Flow - auth_uri not needed. Application as a client will pass client_id and secret for authentication.
             GrantType::ClientCredentials => Error,
             // Device Flow - auth_uri not needed - device will authenticate with client_id and device_code.
