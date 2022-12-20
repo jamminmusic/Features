@@ -51,14 +51,7 @@ impl GrantType {
             GrantType::Pkce => AuthUriBuilder::new().create_client().generate_pkce().generate_auth_uri_pkce(),
             // Refresh Flow - If client was issued a secret User interaction with auth_uri needed, otherwise User interaction with auth_uri not needed. 
             // https://docs.rs/oauth2/4.3.0/oauth2/trait.TokenResponse.html#tymethod.refresh_token
-            GrantType::Refresh => {
-                if req.client_secret != None {
-                    // How to handle this one? User interaction Needed.
-                    AuthUriBuilder::new().create_client().generate_auth_uri()
-                } else {
-                    AuthUriBuilder::new().create_client().generate_device_auth_uri()
-                }
-            },
+            GrantType::Refresh => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // Application Flow - User interaction with auth_uri not needed. Application as a client will pass client_id and secret for authentication.
             // https://docs.rs/oauth2/4.3.0/oauth2/#client-credentials-grant
             GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri(),
