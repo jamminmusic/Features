@@ -40,19 +40,43 @@ pub struct AuthUriBuilder {
 }
 
 impl AuthUriBuilder {
-    async fn generate_auth_uri(
-        client: &BasicClient,
-        pkce_code_challenge: Option<&PkceCodeChallenge>,
-        scope: &GetAuthUriRequest.scope
-    ) -> Result<(url::Url, CsrfToken), Error> {
-        let (authorize_url, csrf_state) = client
-            .authorize_url(CsrfToken::new_random)
-            .add_scope(Scope::new(config.scope.unwrap()))
-            // Use builder pattern here to make set pkce an optional chained method
-            .set_pkce_challenge(pkce_code_challenge.unwrap())
-            .url();
-        Ok((authorize_url, csrf_state))
+    fn new() -> FooBuilder {
+        FooBuilder {
+            foos: 0,
+            bars: 0,
+        }
     }
+    fn set_authorize_url(mut self, foos: usize) -> FooBuilder {
+        self.foos = foos;
+        self
+    }
+    fn set_scope(mut self, bars: usize) -> FooBuilder {
+        self.bars = bars;
+        self
+    }
+    fn set_pkce(mut self, bars: usize) -> FooBuilder {
+        self.bars = bars;
+        self
+    }
+    fn build(&self) -> Foo {
+        Foo {
+            value: self.foos + self.bars,
+        }
+    }
+}
+
+async fn generate_auth_uri(
+    client: &BasicClient,
+    pkce_code_challenge: Option<&PkceCodeChallenge>,
+    scope: &GetAuthUriRequest.scope
+) -> Result<(url::Url, CsrfToken), Error> {
+    let (authorize_url, csrf_state) = client
+        .authorize_url(CsrfToken::new_random)
+        .add_scope(Scope::new(config.scope.unwrap()))
+        // Use builder pattern here to make set pkce an optional chained method
+        .set_pkce_challenge(pkce_code_challenge.unwrap())
+        .url();
+    Ok((authorize_url, csrf_state))
 }
 
 // Use NATS Provider HERE
