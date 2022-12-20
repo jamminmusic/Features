@@ -32,6 +32,8 @@ structure GetAuthUriRequest {
   // the struct is serialized as an array (without field names), so it’s much more compact and faster.
   // Schema evolution: If you modify the struct and add a field, as long as you keep the numbers of 
   // old fields the same, it should work. If you delete a field, don’t re-use the number.
+
+  // I DON'T THINK PROVIDER IS NECESSARY 
   @n(0)
   @required
   provider: String
@@ -104,6 +106,8 @@ structure AuthorizeUserRequest {
   // the struct is serialized as an array (without field names), so it’s much more compact and faster.
   // Schema evolution: If you modify the struct and add a field, as long as you keep the numbers of 
   // old fields the same, it should work. If you delete a field, don’t re-use the number.
+
+  // I DON'T THINK PROVIDER IS NECESSARY 
   @n(0)
   @required
   provider: String
@@ -176,6 +180,7 @@ operation UnauthorizeUser {
 }
 
 structure UnauthorizeUserRequest {
+  // I DON'T THINK PROVIDER IS NECESSARY - MAY NEED TO ADD MORE FIELDS FOR URIs
   @n(0)
   @required
   provider: String
