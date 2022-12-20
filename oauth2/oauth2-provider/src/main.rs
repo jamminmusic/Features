@@ -56,7 +56,7 @@ impl GrantType {
             // https://docs.rs/oauth2/4.3.0/oauth2/#client-credentials-grant
             // client_secret is an option when creating the Client, therefore we can handle whether a user needs to interact outside of URI generation.
             GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri(),
-            // Device Flow - User interaction with auth_uri not needed - device will authenticate with client_id and device_code.
+            // Device Flow - User interaction with auth_uri needed - authenticate on browserless or input-constrained devices.
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
             GrantType::DeviceCode => AuthUriBuilder::new().create_client().generate_device_auth_uri(),
         };

@@ -74,9 +74,9 @@ impl AuthUriBuilder {
         Ok((authorize_url, csrf_state))
     }
 
-
     fn set_device_uri(client: BasicClient) -> Result<BasicClient, Error>{
-        let client = client.set_device_authorization_url(device_auth_url);
+        let client = client.set_redirect_uri(
+                    RedirectUrl::new(DeviceAuthorizationUrl::new(req.auth_url.unwrap())).expect("Invalid redirect URL"));
         Ok(client)        
     }
 
@@ -85,13 +85,9 @@ impl AuthUriBuilder {
         pkce_code_challenge: Option<&PkceCodeChallenge>,
         scope: &GetAuthUriRequest.scope
     ) -> Result<(url::Url, CsrfToken), Error> {
-        // convert below and align with 
-        // let details: StandardDeviceAuthorizationResponse = client
-        //     .exchange_device_code()?
-        //     .add_scope(Scope::new("read".to_string()))
-        //     .request(http_client)?;
+        // csrf token and url method need to be verified to work with device flow. This may be wrong
+        let (authorize_url, csrf_state) = client.authorize_url(CsrfToken::new_random).url();
     }
-
 }
 
 async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_response: ){
@@ -112,8 +108,24 @@ async fn token_exchange(authorization_code){
 }
 
 async fn device_token_exchange(authorization_code){
-    let token_result =
-        client
-        .exchange_device_access_token(&details)
-        .request(http_client, std::thread::sleep, None)?;
+
+    // let details: StandardDeviceAuthorizationResponse = client
+    // .exchange_device_code()?
+    // .add_scope(Scope::new("read".to_string()))
+    // .request(http_client)?;
+    // let details: StandardDeviceAuthorizationResponse = client
+    // .exchange_device_code()?
+    // .add_scope(Scope::new("read".to_string()))
+    // .request(http_client)?;
+
+    // println!(
+    //     "Open this URL in your browser:\n{}\nand enter the code: {}",
+    //     details.verification_uri().to_string(),
+    //     details.user_code().secret().to_string()
+    // );
+
+    // let token_result =
+    //     client
+    //     .exchange_device_access_token(&details)
+    //     .request(http_client, std::thread::sleep, None)?;
 }
