@@ -54,6 +54,7 @@ impl GrantType {
             GrantType::Refresh => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // Application Flow - User interaction with auth_uri not needed. Application as a client will pass client_id and secret for authentication.
             // https://docs.rs/oauth2/4.3.0/oauth2/#client-credentials-grant
+            // client_secret is an option when creating the Client, therefore we can handle whether a user needs to interact outside of URI generation.
             GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri(),
             // Device Flow - User interaction with auth_uri not needed - device will authenticate with client_id and device_code.
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
