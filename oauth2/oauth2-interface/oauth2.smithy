@@ -53,14 +53,14 @@ structure GetAuthUriRequest {
 
   @n(4)
   @required
-  auth_url: String
+  auth_uri: String
 
   @n(5)
   @required
-  token_url: String
+  token_uri: String
 
   @n(6)
-  redirect_url: String
+  redirect_uri: String
 
   @n(7)
   @required

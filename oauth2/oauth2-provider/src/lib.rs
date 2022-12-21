@@ -54,15 +54,15 @@ impl AuthUriBuilder {
         let self.client = BasicClient::new(
             ClientId::new(req.client_id.unwrap()),
             Some(ClientSecret::new(req.client_secret.unwrap())),
-            AuthUrl::new(req.auth_url.unwrap()).expect("Invalid authorization endpoint URL"),
-            Some(TokenUrl::new(req.token_url.unwrap()).expect("Invalid authorization endpoint URL")),
+            AuthUrl::new(req.auth_uri.unwrap()).expect("Invalid authorization endpoint URL"),
+            Some(TokenUrl::new(req.token_uri.unwrap()).expect("Invalid authorization endpoint URL")),
         );
         Some(self)
     }
 
     pub fn set_redirect_uri(mut self, req: &GetAuthUriRequest) -> Self {
         let self.client = self.set_redirect_uri(
-                    RedirectUrl::new(req.auth_url.unwrap()).expect("Invalid redirect URL"));
+                    RedirectUrl::new(req.auth_uri.unwrap()).expect("Invalid redirect URL"));
         Some(self)    
     }
 
@@ -90,7 +90,7 @@ impl AuthUriBuilder {
 
     pub fn set_device_uri(mut self, req: &GetAuthUriRequest) -> Self {
         let self.client = self.set_redirect_uri(
-                    RedirectUrl::new(DeviceAuthorizationUrl::new(req.auth_url.unwrap())).expect("Invalid redirect URL"));
+                    RedirectUrl::new(DeviceAuthorizationUrl::new(req.auth_uri.unwrap())).expect("Invalid redirect URL"));
         Some(self)        
     }
 

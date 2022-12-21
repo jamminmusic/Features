@@ -355,11 +355,11 @@ pub struct GetAuthUriRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub client_secret: Option<String>,
     #[serde(default)]
-    pub auth_url: String,
+    pub auth_uri: String,
     #[serde(default)]
-    pub token_url: String,
+    pub token_uri: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub redirect_url: Option<String>,
+    pub redirect_uri: Option<String>,
     #[serde(default)]
     pub scope: String,
 }
@@ -387,9 +387,9 @@ where
     } else {
         e.null()?;
     }
-    e.str(&val.auth_url)?;
-    e.str(&val.token_url)?;
-    if let Some(val) = val.redirect_url.as_ref() {
+    e.str(&val.auth_uri)?;
+    e.str(&val.token_uri)?;
+    if let Some(val) = val.redirect_uri.as_ref() {
         e.str(val)?;
     } else {
         e.null()?;
@@ -408,9 +408,9 @@ pub fn decode_get_auth_uri_request(
         let mut client_id: Option<String> = None;
         let mut device_code: Option<Option<String>> = Some(None);
         let mut client_secret: Option<Option<String>> = Some(None);
-        let mut auth_url: Option<String> = None;
-        let mut token_url: Option<String> = None;
-        let mut redirect_url: Option<Option<String>> = Some(None);
+        let mut auth_uri: Option<String> = None;
+        let mut token_uri: Option<String> = None;
+        let mut redirect_uri: Option<Option<String>> = Some(None);
         let mut scope: Option<String> = None;
 
         let is_array = match d.datatype()? {
@@ -444,10 +444,10 @@ pub fn decode_get_auth_uri_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    4 => auth_url = Some(d.str()?.to_string()),
-                    5 => token_url = Some(d.str()?.to_string()),
+                    4 => auth_uri = Some(d.str()?.to_string()),
+                    5 => token_uri = Some(d.str()?.to_string()),
                     6 => {
-                        redirect_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                        redirect_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -480,10 +480,10 @@ pub fn decode_get_auth_uri_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "auth_url" => auth_url = Some(d.str()?.to_string()),
-                    "token_url" => token_url = Some(d.str()?.to_string()),
-                    "redirect_url" => {
-                        redirect_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                    "auth_uri" => auth_uri = Some(d.str()?.to_string()),
+                    "token_uri" => token_uri = Some(d.str()?.to_string()),
+                    "redirect_uri" => {
+                        redirect_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -514,22 +514,22 @@ pub fn decode_get_auth_uri_request(
             device_code: device_code.unwrap(),
             client_secret: client_secret.unwrap(),
 
-            auth_url: if let Some(__x) = auth_url {
+            auth_uri: if let Some(__x) = auth_uri {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.auth_url (#4)".to_string(),
+                    "missing field GetAuthUriRequest.auth_uri (#4)".to_string(),
                 ));
             },
 
-            token_url: if let Some(__x) = token_url {
+            token_uri: if let Some(__x) = token_uri {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.token_url (#5)".to_string(),
+                    "missing field GetAuthUriRequest.token_uri (#5)".to_string(),
                 ));
             },
-            redirect_url: redirect_url.unwrap(),
+            redirect_uri: redirect_uri.unwrap(),
 
             scope: if let Some(__x) = scope {
                 __x
