@@ -113,7 +113,7 @@ impl AuthUriBuilder {
         scope: &GetAuthUriRequest.scope
     ) -> AuthUriBuilder {
         // csrf token and url method need to be verified to work with device flow. This may be wrong
-        let self.(authorize_url, csrf_state) = client.authorize_url(CsrfToken::new_random).url();
+        let self.auth_uri_device = client.authorize_url(CsrfToken::new_random).url();
         Some(self) 
     }
     pub fn build(self) -> AuthUri {
