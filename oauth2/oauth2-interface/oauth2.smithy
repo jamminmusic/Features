@@ -33,41 +33,36 @@ structure GetAuthUriRequest {
   // Schema evolution: If you modify the struct and add a field, as long as you keep the numbers of 
   // old fields the same, it should work. If you delete a field, don’t re-use the number.
 
-  // I DON'T THINK PROVIDER IS NECESSARY 
-  @n(0)
-  @required
-  provider: String
-
   /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
-  @n(1)
+  @n(0)
   @required
   grant_type: String
 
-  @n(2)
+  @n(1)
   @sensitive
   @required
   client_id: String
 
-  @n(3)
+  @n(2)
   @sensitive
   device_code: String
 
-  @n(4)
+  @n(3)
   @sensitive
   client_secret: String
 
-  @n(5)
+  @n(4)
   @required
   auth_url: String
 
-  @n(6)
+  @n(5)
   @required
   token_url: String
 
-  @n(7)
+  @n(6)
   redirect_url: String
 
-  @n(8)
+  @n(7)
   @required
   scope: String
 }
@@ -107,29 +102,24 @@ structure AuthorizeUserRequest {
   // Schema evolution: If you modify the struct and add a field, as long as you keep the numbers of 
   // old fields the same, it should work. If you delete a field, don’t re-use the number.
 
-  // I DON'T THINK PROVIDER IS NECESSARY 
-  @n(0)
-  @required
-  provider: String
-
   /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
-  @n(1)
+  @n(0)
   @required
   grant_type: String
 
-  @n(2)
+  @n(1)
   @sensitive
   @required
   auth_code: String
 
   // state returned with auth_code to be compared against original csrf_state
-  @n(3)
+  @n(2)
   @sensitive
   @required
   state: String
 
   // retrieved initially generated state - compare against returned state in provider
-  @n(4)
+  @n(3)
   @sensitive
   @required
   csrf_state: String
@@ -165,11 +155,13 @@ structure AuthorizeUserResponse {
 
   @n(6)
   @required
-  device_id: String
+  expire_date: String
 
   @n(7)
   @required
   scope: String
+
+  // Potentially add email
 }
 
 
@@ -180,15 +172,10 @@ operation UnauthorizeUser {
 }
 
 structure UnauthorizeUserRequest {
-  // I DON'T THINK PROVIDER IS NECESSARY - MAY NEED TO ADD MORE FIELDS FOR URIs
   @n(0)
-  @required
-  provider: String
-
-  @n(1)
   user_id: String
 
-  @n(2)
+  @n(1)
   device_id: String
 }
 

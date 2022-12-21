@@ -24,8 +24,6 @@ pub const SMITHY_VERSION: &str = "1.0";
 
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AuthorizeUserRequest {
-    #[serde(default)]
-    pub provider: String,
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default)]
     pub grant_type: String,
@@ -47,8 +45,7 @@ pub fn encode_authorize_user_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(5)?;
-    e.str(&val.provider)?;
+    e.array(4)?;
     e.str(&val.grant_type)?;
     e.str(&val.auth_code)?;
     e.str(&val.state)?;
@@ -62,7 +59,6 @@ pub fn decode_authorize_user_request(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
 ) -> Result<AuthorizeUserRequest, RpcError> {
     let __result = {
-        let mut provider: Option<String> = None;
         let mut grant_type: Option<String> = None;
         let mut auth_code: Option<String> = None;
         let mut state: Option<String> = None;
@@ -81,11 +77,10 @@ pub fn decode_authorize_user_request(
             let len = d.fixed_array()?;
             for __i in 0..(len as usize) {
                 match __i {
-                    0 => provider = Some(d.str()?.to_string()),
-                    1 => grant_type = Some(d.str()?.to_string()),
-                    2 => auth_code = Some(d.str()?.to_string()),
-                    3 => state = Some(d.str()?.to_string()),
-                    4 => csrf_state = Some(d.str()?.to_string()),
+                    0 => grant_type = Some(d.str()?.to_string()),
+                    1 => auth_code = Some(d.str()?.to_string()),
+                    2 => state = Some(d.str()?.to_string()),
+                    3 => csrf_state = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -93,7 +88,6 @@ pub fn decode_authorize_user_request(
             let len = d.fixed_map()?;
             for __i in 0..(len as usize) {
                 match d.str()? {
-                    "provider" => provider = Some(d.str()?.to_string()),
                     "grant_type" => grant_type = Some(d.str()?.to_string()),
                     "auth_code" => auth_code = Some(d.str()?.to_string()),
                     "state" => state = Some(d.str()?.to_string()),
@@ -103,19 +97,11 @@ pub fn decode_authorize_user_request(
             }
         }
         AuthorizeUserRequest {
-            provider: if let Some(__x) = provider {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field AuthorizeUserRequest.provider (#0)".to_string(),
-                ));
-            },
-
             grant_type: if let Some(__x) = grant_type {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserRequest.grant_type (#1)".to_string(),
+                    "missing field AuthorizeUserRequest.grant_type (#0)".to_string(),
                 ));
             },
 
@@ -123,7 +109,7 @@ pub fn decode_authorize_user_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserRequest.auth_code (#2)".to_string(),
+                    "missing field AuthorizeUserRequest.auth_code (#1)".to_string(),
                 ));
             },
 
@@ -131,7 +117,7 @@ pub fn decode_authorize_user_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserRequest.state (#3)".to_string(),
+                    "missing field AuthorizeUserRequest.state (#2)".to_string(),
                 ));
             },
 
@@ -139,7 +125,7 @@ pub fn decode_authorize_user_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserRequest.csrf_state (#4)".to_string(),
+                    "missing field AuthorizeUserRequest.csrf_state (#3)".to_string(),
                 ));
             },
         }
@@ -160,8 +146,10 @@ pub struct AuthorizeUserResponse {
     pub refresh_token: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_id: Option<String>,
     #[serde(default)]
-    pub device_id: String,
+    pub expire_date: String,
     #[serde(default)]
     pub scope: String,
 }
@@ -194,8 +182,12 @@ where
     } else {
         e.null()?;
     }
-    e.null()?;
-    e.str(&val.device_id)?;
+    if let Some(val) = val.device_id.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    e.str(&val.expire_date)?;
     e.str(&val.scope)?;
     Ok(())
 }
@@ -211,7 +203,8 @@ pub fn decode_authorize_user_response(
         let mut access_token: Option<String> = None;
         let mut refresh_token: Option<Option<String>> = Some(None);
         let mut user_id: Option<Option<String>> = Some(None);
-        let mut device_id: Option<String> = None;
+        let mut device_id: Option<Option<String>> = Some(None);
+        let mut expire_date: Option<String> = None;
         let mut scope: Option<String> = None;
 
         let is_array = match d.datatype()? {
@@ -253,8 +246,16 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    5 => device_id = Some(d.str()?.to_string()),
-                    6 => scope = Some(d.str()?.to_string()),
+                    5 => {
+                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    6 => expire_date = Some(d.str()?.to_string()),
+                    7 => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -288,7 +289,15 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "device_id" => device_id = Some(d.str()?.to_string()),
+                    "device_id" => {
+                        device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "expire_date" => expire_date = Some(d.str()?.to_string()),
                     "scope" => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
@@ -313,12 +322,13 @@ pub fn decode_authorize_user_response(
             },
             refresh_token: refresh_token.unwrap(),
             user_id: user_id.unwrap(),
+            device_id: device_id.unwrap(),
 
-            device_id: if let Some(__x) = device_id {
+            expire_date: if let Some(__x) = expire_date {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserResponse.device_id (#5)".to_string(),
+                    "missing field AuthorizeUserResponse.expire_date (#6)".to_string(),
                 ));
             },
 
@@ -326,7 +336,7 @@ pub fn decode_authorize_user_response(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserResponse.scope (#6)".to_string(),
+                    "missing field AuthorizeUserResponse.scope (#7)".to_string(),
                 ));
             },
         }
@@ -335,8 +345,6 @@ pub fn decode_authorize_user_response(
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct GetAuthUriRequest {
-    #[serde(default)]
-    pub provider: String,
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default)]
     pub grant_type: String,
@@ -366,8 +374,7 @@ pub fn encode_get_auth_uri_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(9)?;
-    e.str(&val.provider)?;
+    e.array(8)?;
     e.str(&val.grant_type)?;
     e.str(&val.client_id)?;
     if let Some(val) = val.device_code.as_ref() {
@@ -397,7 +404,6 @@ pub fn decode_get_auth_uri_request(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
 ) -> Result<GetAuthUriRequest, RpcError> {
     let __result = {
-        let mut provider: Option<String> = None;
         let mut grant_type: Option<String> = None;
         let mut client_id: Option<String> = None;
         let mut device_code: Option<Option<String>> = Some(None);
@@ -420,10 +426,9 @@ pub fn decode_get_auth_uri_request(
             let len = d.fixed_array()?;
             for __i in 0..(len as usize) {
                 match __i {
-                    0 => provider = Some(d.str()?.to_string()),
-                    1 => grant_type = Some(d.str()?.to_string()),
-                    2 => client_id = Some(d.str()?.to_string()),
-                    3 => {
+                    0 => grant_type = Some(d.str()?.to_string()),
+                    1 => client_id = Some(d.str()?.to_string()),
+                    2 => {
                         device_code = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
@@ -431,7 +436,7 @@ pub fn decode_get_auth_uri_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    4 => {
+                    3 => {
                         client_secret = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
@@ -439,9 +444,9 @@ pub fn decode_get_auth_uri_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    5 => auth_url = Some(d.str()?.to_string()),
-                    6 => token_url = Some(d.str()?.to_string()),
-                    7 => {
+                    4 => auth_url = Some(d.str()?.to_string()),
+                    5 => token_url = Some(d.str()?.to_string()),
+                    6 => {
                         redirect_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
@@ -449,7 +454,7 @@ pub fn decode_get_auth_uri_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    8 => scope = Some(d.str()?.to_string()),
+                    7 => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
             }
@@ -457,7 +462,6 @@ pub fn decode_get_auth_uri_request(
             let len = d.fixed_map()?;
             for __i in 0..(len as usize) {
                 match d.str()? {
-                    "provider" => provider = Some(d.str()?.to_string()),
                     "grant_type" => grant_type = Some(d.str()?.to_string()),
                     "client_id" => client_id = Some(d.str()?.to_string()),
                     "device_code" => {
@@ -492,19 +496,11 @@ pub fn decode_get_auth_uri_request(
             }
         }
         GetAuthUriRequest {
-            provider: if let Some(__x) = provider {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.provider (#0)".to_string(),
-                ));
-            },
-
             grant_type: if let Some(__x) = grant_type {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.grant_type (#1)".to_string(),
+                    "missing field GetAuthUriRequest.grant_type (#0)".to_string(),
                 ));
             },
 
@@ -512,7 +508,7 @@ pub fn decode_get_auth_uri_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.client_id (#2)".to_string(),
+                    "missing field GetAuthUriRequest.client_id (#1)".to_string(),
                 ));
             },
             device_code: device_code.unwrap(),
@@ -522,7 +518,7 @@ pub fn decode_get_auth_uri_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.auth_url (#5)".to_string(),
+                    "missing field GetAuthUriRequest.auth_url (#4)".to_string(),
                 ));
             },
 
@@ -530,7 +526,7 @@ pub fn decode_get_auth_uri_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.token_url (#6)".to_string(),
+                    "missing field GetAuthUriRequest.token_url (#5)".to_string(),
                 ));
             },
             redirect_url: redirect_url.unwrap(),
@@ -539,7 +535,7 @@ pub fn decode_get_auth_uri_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.scope (#8)".to_string(),
+                    "missing field GetAuthUriRequest.scope (#7)".to_string(),
                 ));
             },
         }
@@ -680,8 +676,6 @@ pub fn decode_get_auth_uri_response(
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 pub struct UnauthorizeUserRequest {
-    #[serde(default)]
-    pub provider: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user_id: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -698,8 +692,7 @@ pub fn encode_unauthorize_user_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(3)?;
-    e.str(&val.provider)?;
+    e.array(2)?;
     if let Some(val) = val.user_id.as_ref() {
         e.str(val)?;
     } else {
@@ -719,7 +712,6 @@ pub fn decode_unauthorize_user_request(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
 ) -> Result<UnauthorizeUserRequest, RpcError> {
     let __result = {
-        let mut provider: Option<String> = None;
         let mut user_id: Option<Option<String>> = Some(None);
         let mut device_id: Option<Option<String>> = Some(None);
 
@@ -736,8 +728,7 @@ pub fn decode_unauthorize_user_request(
             let len = d.fixed_array()?;
             for __i in 0..(len as usize) {
                 match __i {
-                    0 => provider = Some(d.str()?.to_string()),
-                    1 => {
+                    0 => {
                         user_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
@@ -745,7 +736,7 @@ pub fn decode_unauthorize_user_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    2 => {
+                    1 => {
                         device_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
@@ -761,7 +752,6 @@ pub fn decode_unauthorize_user_request(
             let len = d.fixed_map()?;
             for __i in 0..(len as usize) {
                 match d.str()? {
-                    "provider" => provider = Some(d.str()?.to_string()),
                     "user_id" => {
                         user_id = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
@@ -783,13 +773,6 @@ pub fn decode_unauthorize_user_request(
             }
         }
         UnauthorizeUserRequest {
-            provider: if let Some(__x) = provider {
-                __x
-            } else {
-                return Err(RpcError::Deser(
-                    "missing field UnauthorizeUserRequest.provider (#0)".to_string(),
-                ));
-            },
             user_id: user_id.unwrap(),
             device_id: device_id.unwrap(),
         }
