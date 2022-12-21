@@ -76,8 +76,7 @@ structure GetAuthUriResponse {
   @required
   success: Boolean
 
-  /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
-  @n(1)
+   @n(1)
   error: String
 
   @n(2)

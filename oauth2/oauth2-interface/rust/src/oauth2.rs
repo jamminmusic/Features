@@ -546,7 +546,6 @@ pub fn decode_get_auth_uri_request(
 pub struct GetAuthUriResponse {
     #[serde(default)]
     pub success: bool,
-    /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
