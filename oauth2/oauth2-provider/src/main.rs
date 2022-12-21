@@ -42,7 +42,7 @@ pub enum GrantType {
 
 impl GrantType {
     pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result(GetAuthUriResponse, Error){
-        let auth_uri = match self {
+        let auth_uri_response = match self {
             // User Flow - User interaction with auth_uri needed.
             //Just remove PKCE code from https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
             GrantType::AuthorizationCode => AuthUriBuilder::new().create_client(req).set_redirect_uri(req).generate_auth_uri(req).build(),
@@ -65,7 +65,7 @@ impl GrantType {
     }
     // TODO
     pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result(AuthorizeUserResponse, Error) {
-        let token = match self {
+        let authorize_user_response = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
             // 
@@ -77,12 +77,13 @@ impl GrantType {
             // 
             GrantType::DeviceCode => "Define functions to call",
         };
-        // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, user_id: String, device_id: String, device_id: String, scope: String } 
+        // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, 
+        // user_id: String, device_id: String, device_id: String, scope: String } 
         Ok(AuthorizeUserResponse)
     }
     // TODO
     pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result(UnauthorizeUserResponse, Error) {
-        let status = match self {
+        let unauthorize_user_response = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
             // 
@@ -118,7 +119,6 @@ impl Oauth2 for Oauth2Provider {
     ) -> RpcResult<GetAuthUriResponse> {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
         //                    auth_url: String, token_url: String, redirect_url: String, scope: String }
-        // Enum Method Returns GetAuthUriResponse or Error
         // Response Struct - { success: Boolean, error: String, uri: String, csrf_state: String }
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).get_auth_uri().unwrap().await;
         Ok(response)
@@ -130,7 +130,6 @@ impl Oauth2 for Oauth2Provider {
         _req: &AuthorizeUserRequest,
     ) -> RpcResult<AuthorizeUserResponse> {
         // Request Struct - { grant_type: String, auth_code: String, state: String, csrf_state: String }
-        // Enum Method Returns AuthorizeUserResponse or Error
         // Response Struct - { success: Boolean, error: String, access_token: String, refresh_token: String, 
         //                     user_id: String, device_id: String, expire_date: String, scope: String }
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).authorize_user().unwrap().await;
@@ -143,7 +142,6 @@ impl Oauth2 for Oauth2Provider {
         _req: &UnauthorizeUserRequest,
     ) -> RpcResult<UnauthorizeUserResponse> {
         // Request Struct - { user: String, device_id: String }
-        // Enum Method Returns UnauthorizeUserResponse or Error
         // Response Struct - { success: Boolean, error: String }
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
         Ok(response)

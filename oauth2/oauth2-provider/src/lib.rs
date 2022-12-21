@@ -14,9 +14,10 @@ use oauth2::devicecode::StandardDeviceAuthorizationResponse;
 
 #[derive(Debug, PartialEq)]
 pub struct AuthUri {
-    auth_uri: Option((Url, CsrfToken)),
-    auth_uri_pkce: Option((Url, CsrfToken)),
-    auth_uri_device: Option((Url, CsrfToken))
+    success: boolean, 
+    error: String, 
+    uri: String, 
+    csrf_state: String
 }
 
 impl AuthUri {
@@ -28,22 +29,16 @@ impl AuthUri {
 #[derive(Default)]
 pub struct AuthUriBuilder {
     client: Option(BasicClient),
-    redirect_uri: Option(String),
     auth_uri: Option((Url, CsrfToken)),
     pkce: Option((PkceCodeChallenge, PkceCodeVerifier)),
-    auth_uri_pkce: Option((Url, CsrfToken)),
-    auth_uri_device: Option((Url, CsrfToken))
 }
 
 impl AuthUriBuilder {
     pub fn new() -> AuthUriBuilder {
         AuthUriBuilder {
             client: None,
-            redirect_uri: None,
             auth_uri: None,
             pkce: None,
-            auth_uri_pkce: None,
-            auth_uri_device: None
         }
     }
 
@@ -77,7 +72,7 @@ impl AuthUriBuilder {
     }
 
     pub fn generate_auth_uri_pkce(mut self, req: &GetAuthUriRequest) -> Self {
-        let self.auth_uri_pkce = self
+        let self.auth_uri = self
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(req.scope.unwrap()))
             .set_pkce_challenge(self.pkce.unwrap())
@@ -92,17 +87,58 @@ impl AuthUriBuilder {
     }
 
     pub fn generate_device_auth_uri(mut self) -> Self {
-        let self.auth_uri_device = self.authorize_url(CsrfToken::new_random).url();
+        let self.auth_uri = self.authorize_url(CsrfToken::new_random).url();
         Some(self) 
     }
     pub fn build(self) -> AuthUri {
-        AuthUri { auth_uri: self.auth_uri, auth_uri_pkce: self.auth_uri_pkce, auth_uri_device: self.auth_uri_device }
+        AuthUri { success: boolean, error: String, uri: self.auth_uri.0, csrf_state: self.auth_uri.1 }
     }
 }
 
-// TODO
-async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_response: ){
-    if csrf_state == csrf_response {
+#[derive(Debug, PartialEq)]
+pub struct AuthUser {
+    success: boolean, 
+    error: String, 
+    access_token: String, 
+    refresh_token: String, 
+    user_id: String, 
+    device_id: String, 
+    device_id: String, 
+    scope: String
+}
+
+impl AuthUser {
+    pub fn builder() -> AuthUriBuilder {
+        AuthUser::default()
+    }
+}
+
+#[derive(Default)]
+pub struct AuthUserBuilder {
+    client: Option(BasicClient),
+    redirect_uri: Option(String),
+    auth_uri: Option((Url, CsrfToken)),
+    pkce: Option((PkceCodeChallenge, PkceCodeVerifier)),
+    auth_uri_pkce: Option((Url, CsrfToken)),
+    auth_uri_device: Option((Url, CsrfToken))
+}
+
+impl AuthUserBuilder {
+    pub fn new() -> AuthUser {
+        AuthUser {
+            success: boolean, 
+            error: String, 
+            access_token: String, 
+            refresh_token: String, 
+            user_id: String, 
+            device_id: String, 
+            device_id: String, 
+            scope: String
+        }
+    }
+    // TODO
+async fn compare_csrf_state(){
+    if csrf_state == state {
         // OK
     } else {
         // Error
@@ -111,7 +147,7 @@ async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_respo
 
 
 // TODO
-async fn token_exchange(authorization_code){
+async fn token_exchange(){
     let token_result = client
         .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
         // Set the PKCE code verifier.
@@ -121,7 +157,7 @@ async fn token_exchange(authorization_code){
 }
 
 // TODO
-async fn device_token_exchange(authorization_code){
+async fn device_token_exchange(){
 
     // let details: StandardDeviceAuthorizationResponse = client
     // .exchange_device_code()?
@@ -143,6 +179,14 @@ async fn device_token_exchange(authorization_code){
     //     .exchange_device_access_token(&details)
     //     .request(http_client, std::thread::sleep, None)?;
 }
+    pub fn build(self) -> AuthUser {
+        AuthUri { }
+    }
+}
+
+
+
+
 
 
 
