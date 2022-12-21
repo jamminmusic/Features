@@ -45,20 +45,20 @@ impl GrantType {
         let auth_uri = match self {
             // User Flow - User interaction with auth_uri needed.
             //Just remove PKCE code from https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
-            GrantType::AuthorizationCode => AuthUriBuilder::new().create_client().set_redirect_uri().generate_auth_uri().build(),
+            GrantType::AuthorizationCode => AuthUriBuilder::new().create_client(req).set_redirect_uri(req).generate_auth_uri(req).build(),
             // User Flow + Pkce - User interaction with auth_uri needed and will contain code challenge. Most secure User Flow.
             // https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
-            GrantType::Pkce => AuthUriBuilder::new().create_client().set_redirect_uri().generate_pkce().generate_auth_uri_pkce().build(),
+            GrantType::Pkce => AuthUriBuilder::new().create_client(req).set_redirect_uri(req).generate_pkce().generate_auth_uri_pkce(req).build(),
             // Refresh Flow - If client was issued a secret User interaction with auth_uri needed, otherwise User interaction with auth_uri not needed. 
             // https://docs.rs/oauth2/4.3.0/oauth2/trait.TokenResponse.html#tymethod.refresh_token
-            GrantType::Refresh => AuthUriBuilder::new().create_client().generate_auth_uri().build(),
+            GrantType::Refresh => AuthUriBuilder::new().create_client(req).generate_auth_uri(req).build(),
             // Application Flow - User interaction with auth_uri not needed. Application as a client will pass client_id and secret for authentication.
             // https://docs.rs/oauth2/4.3.0/oauth2/#client-credentials-grant
             // client_secret is an option when creating the Client, therefore we can handle whether a user needs to interact outside of URI generation.
-            GrantType::ClientCredentials => AuthUriBuilder::new().create_client().generate_auth_uri().build(),
+            GrantType::ClientCredentials => AuthUriBuilder::new().create_client(req).generate_auth_uri(req).build(),
             // Device Flow - User interaction with auth_uri needed - authenticate on browserless or input-constrained devices.
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
-            GrantType::DeviceCode => AuthUriBuilder::new().create_client().set_device_uri().generate_device_auth_uri().build(),
+            GrantType::DeviceCode => AuthUriBuilder::new().set_device_uri(req).generate_device_auth_uri().build(),
         };
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
         Ok(GetAuthUriResponse)
