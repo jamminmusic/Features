@@ -28,12 +28,12 @@ impl AuthUri {
 
 #[derive(Default)]
 pub struct AuthUriBuilder {
-    client: Some(BasicClient),
-    redirect_uri: Some(String),
-    auth_uri: Some((Url, CsrfToken)),
-    pkce: Some((PkceCodeChallenge, PkceCodeVerifier)),
-    auth_uri_pkce: Some((Url, CsrfToken)),
-    device_client: Some(BasicClient),
+    client: Option(BasicClient),
+    redirect_uri: Option(String),
+    auth_uri: Option((Url, CsrfToken)),
+    pkce: Option((PkceCodeChallenge, PkceCodeVerifier)),
+    auth_uri_pkce: Option((Url, CsrfToken)),
+    device_client: Option(BasicClient),
     auth_uri_device: Option((Url, CsrfToken))
 }
 
