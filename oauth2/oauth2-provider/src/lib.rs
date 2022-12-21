@@ -33,7 +33,6 @@ pub struct AuthUriBuilder {
     auth_uri: Option((Url, CsrfToken)),
     pkce: Option((PkceCodeChallenge, PkceCodeVerifier)),
     auth_uri_pkce: Option((Url, CsrfToken)),
-    device_client: Option(BasicClient),
     auth_uri_device: Option((Url, CsrfToken))
 }
 
@@ -45,7 +44,6 @@ impl AuthUriBuilder {
             auth_uri: None,
             pkce: None,
             auth_uri_pkce: None,
-            device_client: None,
             auth_uri_device: None
         }
     }
@@ -83,7 +81,7 @@ impl AuthUriBuilder {
         let self.auth_uri_pkce = self
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(req.scope.unwrap()))
-            .set_pkce_challenge(pkce_code_challenge.unwrap())
+            .set_pkce_challenge(self.pkce.unwrap())
             .url();
         Some(self) 
     }
