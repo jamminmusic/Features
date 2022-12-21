@@ -99,7 +99,7 @@ impl AuthUriBuilder {
         Some(self) 
     }
     pub fn build(self) -> AuthUri {
-        AuthUri { auth_uri: self. auth_uri_pkce: self, auth_uri_device: self }
+        AuthUri { auth_uri: self.auth_uri, auth_uri_pkce: self.auth_uri_pkce, auth_uri_device: self.auth_uri_device }
     }
 }
 
