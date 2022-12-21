@@ -63,6 +63,7 @@ impl GrantType {
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
         Ok(GetAuthUriResponse)
     }
+    // TODO
     pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result(AuthorizeUserResponse, Error) {
         let token = match self {
             // 
@@ -79,6 +80,7 @@ impl GrantType {
         // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, user_id: String, device_id: String, device_id: String, scope: String } 
         Ok(AuthorizeUserResponse)
     }
+    // TODO
     pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result(UnauthorizeUserResponse, Error) {
         let status = match self {
             // 

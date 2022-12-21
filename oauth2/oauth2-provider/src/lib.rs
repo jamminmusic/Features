@@ -20,7 +20,6 @@ pub struct AuthUri {
 }
 
 impl AuthUri {
-    // This method will help users to discover the builder
     pub fn builder() -> AuthUriBuilder {
         AuthUriBuilder::default()
     }
@@ -101,6 +100,7 @@ impl AuthUriBuilder {
     }
 }
 
+// TODO
 async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_response: ){
     if csrf_state == csrf_response {
         // OK
@@ -109,6 +109,8 @@ async fn compare_csrf_state(auth_code: String, csrf_state: CsrfToken, csrf_respo
     }
 }
 
+
+// TODO
 async fn token_exchange(authorization_code){
     let token_result = client
         .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
@@ -118,6 +120,7 @@ async fn token_exchange(authorization_code){
         .await?;
 }
 
+// TODO
 async fn device_token_exchange(authorization_code){
 
     // let details: StandardDeviceAuthorizationResponse = client
@@ -143,7 +146,7 @@ async fn device_token_exchange(authorization_code){
 
 
 
-
+// TODO
 //-----------UNIT TESTS-----------------
 #[test]
 fn builder_test() {
