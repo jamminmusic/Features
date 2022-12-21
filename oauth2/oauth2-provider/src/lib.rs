@@ -40,13 +40,13 @@ pub struct AuthUriBuilder {
 impl AuthUriBuilder {
     pub fn new() -> AuthUriBuilder {
         AuthUriBuilder {
-            client: Some(BasicClient),
-            redirect_uri: Some(String),
-            auth_uri: Some((Url, CsrfToken)),
-            pkce: Some((PkceCodeChallenge, PkceCodeVerifier)),
-            auth_uri_pkce: Some((Url, CsrfToken)),
-            device_client: Some(BasicClient),
-            auth_uri_device: Some((Url, CsrfToken))
+            client: None,
+            redirect_uri: None,
+            auth_uri: None,
+            pkce: None,
+            auth_uri_pkce: None,
+            device_client: None,
+            auth_uri_device: None
         }
     }
 
@@ -161,4 +161,17 @@ async fn device_token_exchange(authorization_code){
     //     client
     //     .exchange_device_access_token(&details)
     //     .request(http_client, std::thread::sleep, None)?;
+}
+
+
+
+
+//-----------UNIT TESTS-----------------
+#[test]
+fn builder_test() {
+    let foo = Foo {
+        bar: String::from("Y"),
+    };
+    let foo_from_builder: Foo = FooBuilder::new().name(String::from("Y")).build();
+    assert_eq!(foo, foo_from_builder);
 }
