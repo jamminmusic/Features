@@ -20,10 +20,15 @@ pub struct AuthUriBuilder {
 }
 
 impl AuthUriBuilder {
-    fn new() -> FooBuilder {
-        FooBuilder {
-            foos: 0,
-            bars: 0,
+    fn new() -> AuthUriBuilder {
+        AuthUriBuilder {
+            client: BasicClient,
+            redirect_uri: String,
+            auth_uri: (Url, CsrfToken),
+            pkce: (PkceCodeChallenge, PkceCodeVerifier),
+            auth_uri_pkce: (Url, CsrfToken),
+            device_client: BasicClient,
+            auth_uri_device: (Url, CsrfToken)
         }
     }
 
