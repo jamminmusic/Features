@@ -50,7 +50,7 @@ impl AuthUriBuilder {
         }
     }
 
-    pub fn create_client(mut self, req: &GetAuthUriRequest) -> AuthUriBuilder {
+    pub fn create_client(mut self, req: &GetAuthUriRequest) -> Self {
         let self.client = BasicClient::new(
             ClientId::new(req.client_id.unwrap()),
             Some(ClientSecret::new(req.client_secret.unwrap())),
@@ -60,7 +60,7 @@ impl AuthUriBuilder {
         Some(self)
     }
 
-    pub fn set_redirect_uri(mut self, client: BasicClient) -> AuthUriBuilder {
+    pub fn set_redirect_uri(mut self) -> Self {
         let self.client = client.set_redirect_uri(
                     RedirectUrl::new(req.auth_url.unwrap()).expect("Invalid redirect URL"));
         Some(self)    
@@ -71,7 +71,7 @@ impl AuthUriBuilder {
         client: &BasicClient,
         pkce_code_challenge: Option<&PkceCodeChallenge>,
         scope: &GetAuthUriRequest.scope
-    ) -> AuthUriBuilder {
+    ) -> Self {
         let self.auth_uri = client
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(config.scope.unwrap()))
@@ -79,7 +79,7 @@ impl AuthUriBuilder {
         Some(self) 
     }
 
-    pub fn generate_pkce(mut self) -> AuthUriBuilder {
+    pub fn generate_pkce(mut self) -> Self {
         let self.pkce = PkceCodeChallenge::new_random_sha256();
         // what to return?
         Some(self)
@@ -90,7 +90,7 @@ impl AuthUriBuilder {
         client: &BasicClient,
         pkce_code_challenge: Option<&PkceCodeChallenge>,
         scope: &GetAuthUriRequest.scope
-    ) -> AuthUriBuilder {
+    ) -> Self {
         let self.auth_uri_pkce = client
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(config.scope.unwrap()))
@@ -99,7 +99,7 @@ impl AuthUriBuilder {
         Some(self) 
     }
 
-    pub fn set_device_uri(client: BasicClient) -> AuthUriBuilder {
+    pub fn set_device_uri(client: BasicClient) -> Self {
         mut self,
         let self.client = client.set_redirect_uri(
                     RedirectUrl::new(DeviceAuthorizationUrl::new(req.auth_url.unwrap())).expect("Invalid redirect URL"));
@@ -111,14 +111,12 @@ impl AuthUriBuilder {
         client: &BasicClient,
         pkce_code_challenge: Option<&PkceCodeChallenge>,
         scope: &GetAuthUriRequest.scope
-    ) -> AuthUriBuilder {
+    ) -> Self {
         // csrf token and url method need to be verified to work with device flow. This may be wrong
         let self.auth_uri_device = client.authorize_url(CsrfToken::new_random).url();
         Some(self) 
     }
     pub fn build(self) -> AuthUri {
-        // Create a Foo from the FooBuilder, applying all settings in FooBuilder
-        // to Foo.
         AuthUri { auth_uri: self. auth_uri_pkce: self, auth_uri_device: self }
     }
 }
