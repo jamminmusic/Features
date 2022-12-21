@@ -71,8 +71,8 @@ impl AuthUriBuilder {
         client: &BasicClient,
         pkce_code_challenge: Option<&PkceCodeChallenge>,
         scope: &GetAuthUriRequest.scope
-    ) -> Result<(url::Url, CsrfToken), Error> {
-        let (authorize_url, csrf_state) = client
+    ) -> AuthUriBuilder {
+        let self.auth_uri = client
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(config.scope.unwrap()))
             .url();
@@ -80,7 +80,7 @@ impl AuthUriBuilder {
     }
 
     pub fn generate_pkce(mut self) -> AuthUriBuilder {
-        let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
+        let self.pkce = PkceCodeChallenge::new_random_sha256();
         // what to return?
         Some(self)
     }
@@ -91,7 +91,7 @@ impl AuthUriBuilder {
         pkce_code_challenge: Option<&PkceCodeChallenge>,
         scope: &GetAuthUriRequest.scope
     ) -> AuthUriBuilder {
-        let self.pkce = client
+        let self.auth_uri_pkce = client
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(config.scope.unwrap()))
             .set_pkce_challenge(pkce_code_challenge.unwrap())
