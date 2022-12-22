@@ -108,12 +108,11 @@ impl AuthUriBuilder {
 #[derive(Debug, PartialEq)]
 pub struct AuthUser {
     success: boolean, 
-    error: String, 
+    error: Option(String), 
     access_token: String, 
-    refresh_token: String, 
-    user_id: String, 
-    device_id: String, 
-    device_id: String, 
+    refresh_token: Option(String), 
+    user_id: Option(String), 
+    device_id: Option(String), 
     scope: String
 }
 
@@ -125,70 +124,71 @@ impl AuthUser {
 
 #[derive(Default)]
 pub struct AuthUserBuilder {
-    client: Option(BasicClient),
-    redirect_uri: Option(String),
-    auth_uri: Option((Url, CsrfToken)),
-    pkce: Option((PkceCodeChallenge, PkceCodeVerifier)),
-    auth_uri_pkce: Option((Url, CsrfToken)),
-    auth_uri_device: Option((Url, CsrfToken))
+    success: boolean, 
+    error: Option(String), 
+    access_token: String, 
+    refresh_token: Option(String), 
+    user_id: Option(String), 
+    device_id: Option(String), 
+    scope: String
 }
 
 impl AuthUserBuilder {
     pub fn new() -> AuthUser {
         AuthUser {
-            success: boolean, 
-            error: String, 
+            success: false, 
+            error: None, 
             access_token: String, 
-            refresh_token: String, 
-            user_id: String, 
-            device_id: String, 
-            device_id: String, 
+            refresh_token: None, 
+            user_id: None, 
+            device_id: None, 
             scope: String
         }
     }
     // TODO
-async fn compare_csrf_state(){
-    if csrf_state == state {
-        // OK
-    } else {
-        // Error
+    async fn compare_csrf_state(){
+        if csrf_state == state {
+            // OK
+        } else {
+            // Error
+        }
     }
-}
 
 
-// TODO
-async fn token_exchange(){
-    let token_result = client
-        .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
-        // Set the PKCE code verifier.
-        .set_pkce_verifier(pkce_verifier)
-        .request_async(async_http_client)
-        .await?;
-}
+    // TODO
+    async fn token_exchange(){
+        let token_result = client
+            .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
+            // Set the PKCE code verifier.
+            .set_pkce_verifier(pkce_verifier)
+            .request_async(async_http_client)
+            .await?;
+    }
 
-// TODO
-async fn device_token_exchange(){
+    // TODO
+    async fn device_token_exchange(){
 
-    // let details: StandardDeviceAuthorizationResponse = client
-    // .exchange_device_code()?
-    // .add_scope(Scope::new("read".to_string()))
-    // .request(http_client)?;
-    // let details: StandardDeviceAuthorizationResponse = client
-    // .exchange_device_code()?
-    // .add_scope(Scope::new("read".to_string()))
-    // .request(http_client)?;
+        // let details: StandardDeviceAuthorizationResponse = client
+        // .exchange_device_code()?
+        // .add_scope(Scope::new("read".to_string()))
+        // .request(http_client)?;
+        // let details: StandardDeviceAuthorizationResponse = client
+        // .exchange_device_code()?
+        // .add_scope(Scope::new("read".to_string()))
+        // .request(http_client)?;
 
-    // println!(
-    //     "Open this URL in your browser:\n{}\nand enter the code: {}",
-    //     details.verification_uri().to_string(),
-    //     details.user_code().secret().to_string()
-    // );
+        // println!(
+        //     "Open this URL in your browser:\n{}\nand enter the code: {}",
+        //     details.verification_uri().to_string(),
+        //     details.user_code().secret().to_string()
+        // );
 
-    // let token_result =
-    //     client
-    //     .exchange_device_access_token(&details)
-    //     .request(http_client, std::thread::sleep, None)?;
-}
+        // let token_result =
+        //     client
+        //     .exchange_device_access_token(&details)
+        //     .request(http_client, std::thread::sleep, None)?;
+    }
+    
     pub fn build(self) -> AuthUser {
         AuthUri { }
     }

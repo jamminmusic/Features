@@ -78,7 +78,7 @@ impl GrantType {
             GrantType::DeviceCode => "Define functions to call",
         };
         // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, 
-        // user_id: String, device_id: String, device_id: String, scope: String } 
+        // user_id: String, device_id: String, scope: String } 
         Ok(AuthorizeUserResponse)
     }
     // TODO
