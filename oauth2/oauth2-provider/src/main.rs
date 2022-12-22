@@ -8,9 +8,10 @@ use oauth2_interface::{
     UnauthorizeUserRequest, UnauthorizeUserResponse 
 };
 use strum::EnumString;
-use std::collections::HashMap;
+use std::str::FromStr;
+use anyhow::Error;
 use serde::Deserialize;
-
+use oauth2_provider::AuthUriBuilder;
 
 #[allow(unused_imports)]
 use wasmbus_rpc::provider::prelude::*;
@@ -41,7 +42,7 @@ pub enum GrantType {
 }
 
 impl GrantType {
-    pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result(GetAuthUriResponse, Error){
+    pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result<GetAuthUriResponse, Error>{
         let auth_uri_response = match self {
             // User Flow - User interaction with auth_uri needed.
             //Just remove PKCE code from https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
@@ -61,46 +62,46 @@ impl GrantType {
             GrantType::DeviceCode => AuthUriBuilder::new().create_client(req).set_device_uri(req).generate_device_auth_uri().build(),
         };
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
-        Ok(GetAuthUriResponse)
+        Ok(auth_uri_response)
     }
     // TODO
-    pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result(AuthorizeUserResponse, Error) {
+    pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result<AuthorizeUserResponse, Error> {
         unimplemented!();
 
-        let authorize_user_response = match self {
-            // 
-            GrantType::AuthorizationCode => "Define functions to call",
-            // 
-            GrantType::Pkce => "Define functions to call",
-            // 
-            GrantType::Refresh => "Define functions to call",
-            // 
-            GrantType::ClientCredentials => "Define functions to call",
-            // 
-            GrantType::DeviceCode => "Define functions to call",
-        };
-        // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, 
-        // user_id: String, device_id: String, scope: String } 
-        Ok(AuthorizeUserResponse)
+        // let authorize_user_response = match self {
+        //     // 
+        //     GrantType::AuthorizationCode => "Define functions to call",
+        //     // 
+        //     GrantType::Pkce => "Define functions to call",
+        //     // 
+        //     GrantType::Refresh => "Define functions to call",
+        //     // 
+        //     GrantType::ClientCredentials => "Define functions to call",
+        //     // 
+        //     GrantType::DeviceCode => "Define functions to call",
+        // };
+        // // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, 
+        // // user_id: String, device_id: String, scope: String } 
+        // Ok(AuthorizeUserResponse)
     }
     // TODO
-    pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result(UnauthorizeUserResponse, Error) {
+    pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result<UnauthorizeUserResponse, Error> {
         unimplemented!();
 
-        let unauthorize_user_response = match self {
-            // 
-            GrantType::AuthorizationCode => "Define functions to call",
-            // 
-            GrantType::Pkce => "Define functions to call",
-            // 
-            GrantType::Refresh => "Define functions to call",
-            // 
-            GrantType::ClientCredentials => "Define functions to call",
-            // 
-            GrantType::DeviceCode => "Define functions to call",
-        };
-        // Response Struct - { success: boolean, error: String } 
-        Ok(UnauthorizeUserResponse)
+        // let unauthorize_user_response = match self {
+        //     // 
+        //     GrantType::AuthorizationCode => "Define functions to call",
+        //     // 
+        //     GrantType::Pkce => "Define functions to call",
+        //     // 
+        //     GrantType::Refresh => "Define functions to call",
+        //     // 
+        //     GrantType::ClientCredentials => "Define functions to call",
+        //     // 
+        //     GrantType::DeviceCode => "Define functions to call",
+        // };
+        // // Response Struct - { success: boolean, error: String } 
+        // Ok(UnauthorizeUserResponse)
     }
 }
 
@@ -124,7 +125,7 @@ impl Oauth2 for Oauth2Provider {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
         //                    auth_url: String, token_url: String, redirect_url: String, scope: String }
         // Response Struct - { success: Boolean, error: String, uri: String, csrf_state: String }
-        let response = GrantType::from_str(GetAuthUriRequest.grant_type).get_auth_uri().unwrap().await;
+        let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_uri(&_req).await.unwrap();
         Ok(response)
     }
 
@@ -137,8 +138,8 @@ impl Oauth2 for Oauth2Provider {
         // Request Struct - { grant_type: String, auth_code: String, state: String, csrf_state: String }
         // Response Struct - { success: Boolean, error: String, access_token: String, refresh_token: String, 
         //                     user_id: String, device_id: String, expire_date: String, scope: String }
-        let response = GrantType::from_str(GetAuthUriRequest.grant_type).authorize_user().unwrap().await;
-        Ok(response)
+        // let response = GrantType::from_str(GetAuthUriRequest.grant_type).authorize_user().unwrap().await;
+        // Ok(response)
     }
 
     async fn unauthorize_user(
@@ -149,7 +150,7 @@ impl Oauth2 for Oauth2Provider {
         unimplemented!();
         // Request Struct - { user: String, device_id: String }
         // Response Struct - { success: Boolean, error: String }
-        let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
-        Ok(response)
+        // let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
+        // Ok(response)
     }
 }

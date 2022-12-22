@@ -1268,6 +1268,7 @@ dependencies = [
  "async-trait",
  "oauth2",
  "oauth2-interface",
+ "serde",
  "strum",
  "tokio",
  "url",

@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
 use anyhow;
-use oauth2_interface::GetAuthUriRequest;
+use oauth2_interface::{GetAuthUriRequest, GetAuthUriResponse};
 use oauth2::{
     AuthorizationCode,
     AuthUrl,
@@ -19,31 +19,17 @@ use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
 use oauth2::devicecode::StandardDeviceAuthorizationResponse;
 use url::Url;
-use std::collections::HashMap;
 use std::str::FromStr;
 use wasmbus_rpc::provider::prelude::*;
 
-
-#[derive(Debug, PartialEq)]
-pub struct AuthUri {
-    success: bool, 
-    error: Option<String>, 
-    uri: String, 
-    csrf_state: String
-}
-
-impl AuthUri {
-    pub fn builder() -> AuthUriBuilder {
-        AuthUriBuilder::default()
-    }
-}
-
 #[derive(Default)]
 pub struct AuthUriBuilder {
+    // Basic Client Struct - Client<BasicErrorResponse, BasicTokenResponse, BasicTokenType, BasicTokenIntrospectionResponse, StandardRevocableToken, BasicRevocationErrorResponse>
     client: Option<oauth2::basic::BasicClient>,
     // may need another field for device uri
     auth_uri: Option<(Url, CsrfToken)>,
-    pkce: Option<(PkceCodeChallenge, PkceCodeVerifier)>,
+    pkce: Option<PkceCodeChallenge>,
+    pkce_verifier:Option<PkceCodeVerifier>,
     success: bool,
     error: Option<String>
 }
@@ -57,6 +43,7 @@ impl AuthUriBuilder {
             client: None,
             auth_uri: None,
             pkce: None,
+            pkce_verifier: None,
             success: false,
             error: None,
         }
@@ -64,24 +51,24 @@ impl AuthUriBuilder {
 
     pub fn create_client(mut self, req: &GetAuthUriRequest) -> Self {
         self.client = Some(BasicClient::new(
-            ClientId::new(req.client_id),
-            Some(ClientSecret::new(req.client_secret.unwrap())),
-            AuthUrl::new(req.auth_uri).expect("Invalid authorization endpoint URL"),
-            Some(TokenUrl::new(req.token_uri).expect("Invalid authorization endpoint URL")),
+            ClientId::new(req.client_id.to_owned()),
+            Some(ClientSecret::new(req.client_secret.to_owned().unwrap())),
+            AuthUrl::new(req.auth_uri.to_owned()).expect("Invalid authorization endpoint URL"),
+            Some(TokenUrl::new(req.token_uri.to_owned()).expect("Invalid authorization endpoint URL")),
         ));
         self
     }
 
     pub fn set_redirect_uri(mut self, req: &GetAuthUriRequest) -> Self {
         self.client = Some(self.client.unwrap().set_redirect_uri(
-                    RedirectUrl::new(req.auth_uri).expect("Invalid redirect URL")));
+                    RedirectUrl::new(req.auth_uri.to_string()).expect("Invalid redirect URL")));
         self    
     }
 
     pub fn generate_auth_uri(mut self, req: &GetAuthUriRequest) -> Self {
-        self.auth_uri = Some(self.client.unwrap()
+        self.auth_uri = Some(self.client.to_owned().unwrap()
             .authorize_url(CsrfToken::new_random)
-            .add_scope(Scope::new(req.scope))
+            .add_scope(Scope::new(req.scope.to_owned()))
             .url());
 
         // TODO - how to validate auth_uri to return true
@@ -90,20 +77,22 @@ impl AuthUriBuilder {
     }
 
     pub fn generate_pkce(mut self) -> Self {
-        self.pkce = Some(PkceCodeChallenge::new_random_sha256());
+        let pkce_tuple = PkceCodeChallenge::new_random_sha256();
+        self.pkce = Some(pkce_tuple.0);
+        self.pkce_verifier = Some(pkce_tuple.1);
         self
     }
 
     pub fn generate_auth_uri_pkce(mut self, req: &GetAuthUriRequest) -> Self {
-        self.auth_uri = Some(self.client.unwrap()
+        self.auth_uri = Some(self.client.to_owned().unwrap()
             .authorize_url(CsrfToken::new_random)
-            .add_scope(Scope::new(req.scope))
-            .set_pkce_challenge(self.pkce.unwrap().0)
+            .add_scope(Scope::new(req.scope.to_owned()))
+            .set_pkce_challenge(self.pkce.to_owned().unwrap())
             .url());
 
         // TODO - how to validate auth_uri to return true
         self.success = true;  
-        self 
+        self
     }
 
     pub fn set_device_uri(mut self, req: &GetAuthUriRequest) -> Self {
@@ -129,11 +118,11 @@ impl AuthUriBuilder {
         // self.success = true; 
         // self 
     }
-    pub fn build(self) -> AuthUri {
-        AuthUri { 
+    pub fn build(self) -> GetAuthUriResponse {
+        GetAuthUriResponse { 
             success: self.success, error: self.error,
             // need to create a smithy model for CsrfToken, or create one as a string - https://docs.rs/oauth2/latest/oauth2/struct.CsrfToken.html#method.secret
-            uri: self.auth_uri.unwrap().0.to_string(), csrf_state: self.auth_uri.unwrap().1 
+            uri: Some(self.auth_uri.to_owned().unwrap().0.to_string()), csrf_state: self.auth_uri.to_owned().unwrap().1.secret().to_string() 
         }
     }
 }
@@ -190,7 +179,7 @@ impl AuthUserBuilder {
     }
 
 
-    // TODO
+    // TODO - Only supporting Bearer Tokens
     async fn token_exchange(){
         unimplemented!();
 
