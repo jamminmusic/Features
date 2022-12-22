@@ -107,13 +107,13 @@ impl AuthUriBuilder {
 
 #[derive(Debug, PartialEq)]
 pub struct AuthUser {
-    success: boolean, 
+    success: Boolean, 
     error: Option(String), 
-    access_token: String, 
+    access_token: Option(String), 
     refresh_token: Option(String), 
     user_id: Option(String), 
     device_id: Option(String), 
-    scope: String
+    scope: Option(String)
 }
 
 impl AuthUser {
@@ -124,13 +124,13 @@ impl AuthUser {
 
 #[derive(Default)]
 pub struct AuthUserBuilder {
-    success: boolean, 
+    success: Boolean, 
     error: Option(String), 
-    access_token: String, 
+    access_token: Option(String), 
     refresh_token: Option(String), 
     user_id: Option(String), 
     device_id: Option(String), 
-    scope: String
+    scope: Option(String)
 }
 
 impl AuthUserBuilder {
@@ -138,15 +138,17 @@ impl AuthUserBuilder {
         AuthUser {
             success: false, 
             error: None, 
-            access_token: String, 
+            access_token: None, 
             refresh_token: None, 
             user_id: None, 
             device_id: None, 
-            scope: String
+            scope: None
         }
     }
     // TODO
     async fn compare_csrf_state(){
+        unimplemented!()
+
         if csrf_state == state {
             // OK
         } else {
@@ -157,6 +159,8 @@ impl AuthUserBuilder {
 
     // TODO
     async fn token_exchange(){
+        unimplemented!()
+
         let token_result = client
             .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
             // Set the PKCE code verifier.
@@ -168,6 +172,7 @@ impl AuthUserBuilder {
     // TODO
     async fn device_token_exchange(){
 
+        unimplemented!()
         // let details: StandardDeviceAuthorizationResponse = client
         // .exchange_device_code()?
         // .add_scope(Scope::new("read".to_string()))
@@ -188,8 +193,11 @@ impl AuthUserBuilder {
         //     .exchange_device_access_token(&details)
         //     .request(http_client, std::thread::sleep, None)?;
     }
-    
+
+    // TODO
     pub fn build(self) -> AuthUser {
+        unimplemented!()
+
         AuthUri { }
     }
 }

@@ -65,6 +65,8 @@ impl GrantType {
     }
     // TODO
     pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result(AuthorizeUserResponse, Error) {
+        unimplemented!()
+        
         let authorize_user_response = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
@@ -83,6 +85,8 @@ impl GrantType {
     }
     // TODO
     pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result(UnauthorizeUserResponse, Error) {
+        unimplemented!()
+
         let unauthorize_user_response = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
@@ -129,6 +133,7 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &AuthorizeUserRequest,
     ) -> RpcResult<AuthorizeUserResponse> {
+        unimplemented!()
         // Request Struct - { grant_type: String, auth_code: String, state: String, csrf_state: String }
         // Response Struct - { success: Boolean, error: String, access_token: String, refresh_token: String, 
         //                     user_id: String, device_id: String, expire_date: String, scope: String }
@@ -141,6 +146,7 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &UnauthorizeUserRequest,
     ) -> RpcResult<UnauthorizeUserResponse> {
+        unimplemented!()
         // Request Struct - { user: String, device_id: String }
         // Response Struct - { success: Boolean, error: String }
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
