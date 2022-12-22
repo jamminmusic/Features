@@ -42,7 +42,7 @@ impl HttpServer for Oauth2Actor {
 impl MessageSubscriber for Oauth2Actor {
     /// Handle a message received on a subscription
     async fn handle_message(&self, _ctx: &Context, msg: &SubMessage) -> RpcResult<()> {
-        unimplemented!()
+        unimplemented!();
 
         info!("Received message: {:?}", msg);
         Ok(())
@@ -53,7 +53,7 @@ impl MessageSubscriber for Oauth2Actor {
 // example - Sending a message via a wasmcloud:messaging provider, waiting one second for a reply
 // use wasmcloud_interface_messaging::{Messaging, MessagingSender, RequestMessage};
 async fn message_request(ctx: &Context, subject: &str, body: &[u8]) -> RpcResult<()> {
-    unimplemented!()
+    unimplemented!();
 
     let provider = MessagingSender::new();
     if let Err(e) = provider
@@ -76,7 +76,7 @@ async fn message_request(ctx: &Context, subject: &str, body: &[u8]) -> RpcResult
 // TODO
 // example - check if value exists in kvstore
 async fn key_exists(ctx: &Context, key: &str) -> bool {
-    unimplemented!()
+    unimplemented!();
 
     KeyValueSender::new().contains(ctx, key).await.is_ok()
 }

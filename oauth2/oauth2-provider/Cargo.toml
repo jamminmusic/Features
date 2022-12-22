@@ -7,9 +7,12 @@ resolver = "2"
 [dependencies]
 async-trait = "0.1.60"
 wasmbus-rpc = "0.11.2"
-wasmcloud-interface-httpserver = "0.8.2"
+wasmcloud-interface-httpserver = "0.9.0"
 oauth2-interface = { path = "../oauth2-interface/rust", version = "0.1.0" }
+oauth2 = "4.3.0"
+url = "2.3.1"
 strum = { version = "0.24.1", features = ["derive"] }
+anyhow = "1.0.68"
 
 # test dependencies
 [dev-dependencies]

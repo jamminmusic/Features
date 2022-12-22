@@ -1,21 +1,33 @@
 #[allow(unused_imports)]
 use anyhow;
+use oauth2_interface::GetAuthUriRequest;
+use oauth2::{
+    AuthorizationCode,
+    AuthUrl,
+    ClientId,
+    ClientSecret,
+    CsrfToken,
+    DeviceAuthorizationUrl,
+    PkceCodeChallenge,
+    PkceCodeVerifier,
+    RedirectUrl,
+    Scope,
+    TokenResponse,
+    TokenUrl
+};
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
-use oauth2::{
-    url, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, HttpRequest,
-    PkceCodeChallenge, PkceCodeVerifier, RedirectUrl, Scope, TokenResponse, TokenUrl, DeviceAuthorizationUrl,
-};
+use oauth2::devicecode::StandardDeviceAuthorizationResponse;
+use url::Url;
 use std::collections::HashMap;
 use std::str::FromStr;
 use wasmbus_rpc::provider::prelude::*;
-use oauth2::devicecode::StandardDeviceAuthorizationResponse;
 
 
 #[derive(Debug, PartialEq)]
 pub struct AuthUri {
-    success: boolean, 
-    error: String, 
+    success: bool, 
+    error: Option<String>, 
     uri: String, 
     csrf_state: String
 }
@@ -28,11 +40,11 @@ impl AuthUri {
 
 #[derive(Default)]
 pub struct AuthUriBuilder {
-    client: Option(BasicClient),
-    auth_uri: Option((Url, CsrfToken)),
-    pkce: Option((PkceCodeChallenge, PkceCodeVerifier)),
-    success: Boolean,
-    error: Option(String)
+    client: Option<oauth2::basic::BasicClient>,
+    auth_uri: Option<(Url, CsrfToken)>,
+    pkce: Option<(PkceCodeChallenge, PkceCodeVerifier)>,
+    success: bool,
+    error: Option<String>
 }
 
 impl AuthUriBuilder {
@@ -47,95 +59,105 @@ impl AuthUriBuilder {
     }
 
     pub fn create_client(mut self, req: &GetAuthUriRequest) -> Self {
-        let self.client = BasicClient::new(
-            ClientId::new(req.client_id.unwrap()),
-            Some(ClientSecret::new(req.client_secret.unwrap())),
+        self.client = Some(BasicClient::new(
+            ClientId::new(req.client_id),
+            Some(ClientSecret::new(req.client_secret)),
             AuthUrl::new(req.auth_uri.unwrap()).expect("Invalid authorization endpoint URL"),
-            Some(TokenUrl::new(req.token_uri.unwrap()).expect("Invalid authorization endpoint URL")),
-        );
-        Some(self)
+            Some(TokenUrl::new(req.token_uri).expect("Invalid authorization endpoint URL")),
+        ));
+        self
     }
 
     pub fn set_redirect_uri(mut self, req: &GetAuthUriRequest) -> Self {
-        let self.client = self.set_redirect_uri(
-                    RedirectUrl::new(req.auth_uri.unwrap()).expect("Invalid redirect URL"));
-        Some(self)    
+        self.client = Some(self.set_redirect_uri(
+                    RedirectUrl::new(req.auth_uri).expect("Invalid redirect URL")));
+        self    
     }
 
     pub fn generate_auth_uri(mut self, req: &GetAuthUriRequest) -> Self {
-        let self.auth_uri = self
+        self.auth_uri = Some(self
             .authorize_url(CsrfToken::new_random)
-            .add_scope(Scope::new(req.scope.unwrap()))
-            .url();
+            .add_scope(Scope::new(req.scope))
+            .url());
+
         // TODO - how to validate auth_uri to return true
-        let self.success = true; 
-        Some(self) 
+        self.success = true; 
+        self 
     }
 
     pub fn generate_pkce(mut self) -> Self {
-        let self.pkce = PkceCodeChallenge::new_random_sha256();
-        Some(self)
+        self.pkce = Some(PkceCodeChallenge::new_random_sha256());
+        self
     }
 
     pub fn generate_auth_uri_pkce(mut self, req: &GetAuthUriRequest) -> Self {
-        let self.auth_uri = self
+        self.auth_uri = Some(self
             .authorize_url(CsrfToken::new_random)
-            .add_scope(Scope::new(req.scope.unwrap()))
+            .add_scope(Scope::new(req.scope))
             .set_pkce_challenge(self.pkce.unwrap())
-            .url();
+            .url());
+
         // TODO - how to validate auth_uri to return true
-        let self.success = true;  
-        Some(self) 
+        self.success = true;  
+        self 
     }
 
     pub fn set_device_uri(mut self, req: &GetAuthUriRequest) -> Self {
-        let self.client = self.set_redirect_uri(
-                    RedirectUrl::new(DeviceAuthorizationUrl::new(req.auth_uri.unwrap())).expect("Invalid redirect URL"));
-        Some(self)        
+        self.client = Some(self.set_device_authorization_url(DeviceAuthorizationUrl::new(req.auth_uri)).expect("Invalid redirect URL"));
+        self        
     }
 
     pub fn generate_device_auth_uri(mut self) -> Self {
-        let self.auth_uri = self.authorize_url(CsrfToken::new_random).url();
-        // TODO - how to validate auth_uri to return true
-        let self.success = true; 
-        Some(self) 
+        unimplemented!();
+
+        // // TODO - https://docs.rs/oauth2/latest/oauth2/#device-code-flow
+        // self.auth_uri = Some(self
+        //     // look this up
+        //     .exchange_device_code()
+        //     .add_scope(Scope::new("read".to_string()))
+        //     // look this up
+        //     .request(http_client));
+
+        // // TODO - how to validate auth_uri to return true
+        // self.success = true; 
+        // self 
     }
     pub fn build(self) -> AuthUri {
-        AuthUri { success: self.success, uri: self.auth_uri.0, csrf_state: self.auth_uri.1 }
+        AuthUri { success: self.success, error: self.error, uri: self.auth_uri.0, csrf_state: self.auth_uri.1 }
     }
 }
 
 #[derive(Debug, PartialEq)]
 pub struct AuthUser {
-    success: Boolean, 
-    error: Option(String), 
-    access_token: Option(String), 
-    refresh_token: Option(String), 
-    user_id: Option(String), 
-    device_id: Option(String), 
-    scope: Option(String)
+    success: bool, 
+    error: Option<String>, 
+    access_token: Option<String>, 
+    refresh_token: Option<String>, 
+    user_id: Option<String>, 
+    device_id: Option<String>, 
+    scope: Option<String>
 }
 
 impl AuthUser {
-    pub fn builder() -> AuthUriBuilder {
-        AuthUser::default()
+    pub fn builder() -> AuthUserBuilder {
+        AuthUserBuilder::default()
     }
 }
 
 #[derive(Default)]
 pub struct AuthUserBuilder {
-    success: Boolean, 
-    error: Option(String), 
-    access_token: Option(String), 
-    refresh_token: Option(String), 
-    user_id: Option(String), 
-    device_id: Option(String), 
-    scope: Option(String)
+    success: bool, 
+    error: Option<String>, 
+    access_token: Option<String>, 
+    refresh_token: Option<String>, 
+    user_id: Option<String>, 
+    device_id: Option<String>, 
+    scope: Option<String>
 }
 
 impl AuthUserBuilder {
-    pub fn new() -> AuthUser {
-        AuthUser {
+    pub fn new() -> Self {
+        Self {
             success: false, 
             error: None, 
             access_token: None, 
@@ -147,32 +169,32 @@ impl AuthUserBuilder {
     }
     // TODO
     async fn compare_csrf_state(){
-        unimplemented!()
+        unimplemented!();
 
-        if csrf_state == state {
-            // OK
-        } else {
-            // Error
-        }
+        // if csrf_state == state {
+        //     // OK
+        // } else {
+        //     // Error
+        // }
     }
 
 
     // TODO
     async fn token_exchange(){
-        unimplemented!()
+        unimplemented!();
 
-        let token_result = client
-            .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
-            // Set the PKCE code verifier.
-            .set_pkce_verifier(pkce_verifier)
-            .request_async(async_http_client)
-            .await?;
+        // let token_result = client
+        //     .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
+        //     // Set the PKCE code verifier.
+        //     .set_pkce_verifier(pkce_verifier)
+        //     .request_async(async_http_client)
+        //     .await?;
     }
 
     // TODO
     async fn device_token_exchange(){
 
-        unimplemented!()
+        unimplemented!();
         // let details: StandardDeviceAuthorizationResponse = client
         // .exchange_device_code()?
         // .add_scope(Scope::new("read".to_string()))
@@ -196,9 +218,11 @@ impl AuthUserBuilder {
 
     // TODO
     pub fn build(self) -> AuthUser {
-        unimplemented!()
-
-        AuthUri { }
+        AuthUser { 
+            success: self.success, error: self.error, 
+            access_token: self.access_token, refresh_token: self.refresh_token, 
+            user_id: self.user_id, device_id: self.device_id, scope: self.scope 
+        }
     }
 }
 

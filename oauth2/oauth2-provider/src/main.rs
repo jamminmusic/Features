@@ -58,15 +58,15 @@ impl GrantType {
             GrantType::ClientCredentials => AuthUriBuilder::new().create_client(req).generate_auth_uri(req).build(),
             // Device Flow - User interaction with auth_uri needed - authenticate on browserless or input-constrained devices.
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
-            GrantType::DeviceCode => AuthUriBuilder::new().set_device_uri(req).generate_device_auth_uri().build(),
+            GrantType::DeviceCode => AuthUriBuilder::new().create_client(req).set_device_uri(req).generate_device_auth_uri().build(),
         };
         // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
         Ok(GetAuthUriResponse)
     }
     // TODO
     pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result(AuthorizeUserResponse, Error) {
-        unimplemented!()
-        
+        unimplemented!();
+
         let authorize_user_response = match self {
             // 
             GrantType::AuthorizationCode => "Define functions to call",
@@ -85,7 +85,7 @@ impl GrantType {
     }
     // TODO
     pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result(UnauthorizeUserResponse, Error) {
-        unimplemented!()
+        unimplemented!();
 
         let unauthorize_user_response = match self {
             // 
@@ -133,7 +133,7 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &AuthorizeUserRequest,
     ) -> RpcResult<AuthorizeUserResponse> {
-        unimplemented!()
+        unimplemented!();
         // Request Struct - { grant_type: String, auth_code: String, state: String, csrf_state: String }
         // Response Struct - { success: Boolean, error: String, access_token: String, refresh_token: String, 
         //                     user_id: String, device_id: String, expire_date: String, scope: String }
@@ -146,7 +146,7 @@ impl Oauth2 for Oauth2Provider {
         _ctx: &Context,
         _req: &UnauthorizeUserRequest,
     ) -> RpcResult<UnauthorizeUserResponse> {
-        unimplemented!()
+        unimplemented!();
         // Request Struct - { user: String, device_id: String }
         // Response Struct - { success: Boolean, error: String }
         let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
