@@ -11,6 +11,7 @@ use org.wasmcloud.model#wasmbus
 use org.wasmcloud.model#U32
 use org.wasmcloud.model#U64
 use org.wasmcloud.model#n
+// use org.jamminmusic.model#CsrfToken
 
 /// The Oauth2 service has 3 Operations: To Authorize the user with OAuth Provider, To Remove Authorization, and to get the initial /Authorize URI
 @wasmbus(

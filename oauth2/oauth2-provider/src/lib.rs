@@ -127,7 +127,11 @@ impl AuthUriBuilder {
         // self 
     }
     pub fn build(self) -> AuthUri {
-        AuthUri { success: self.success, error: self.error, uri: self.auth_uri.unwrap().0.to_string(), csrf_state: self.auth_uri.unwrap().1 }
+        AuthUri { 
+            success: self.success, error: self.error,
+            // need to create a smithy model for CsrfToken, or create one as a string - https://docs.rs/oauth2/latest/oauth2/struct.CsrfToken.html#method.secret
+            uri: self.auth_uri.unwrap().0.to_string(), csrf_state: self.auth_uri.unwrap().1 
+        }
     }
 }
 
