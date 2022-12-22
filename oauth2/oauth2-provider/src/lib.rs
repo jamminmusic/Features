@@ -31,6 +31,8 @@ pub struct AuthUriBuilder {
     client: Option(BasicClient),
     auth_uri: Option((Url, CsrfToken)),
     pkce: Option((PkceCodeChallenge, PkceCodeVerifier)),
+    success: Boolean,
+    error: Option(String)
 }
 
 impl AuthUriBuilder {
@@ -39,6 +41,8 @@ impl AuthUriBuilder {
             client: None,
             auth_uri: None,
             pkce: None,
+            success: false,
+            error: None,
         }
     }
 
@@ -63,6 +67,8 @@ impl AuthUriBuilder {
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(req.scope.unwrap()))
             .url();
+        // TODO - how to validate auth_uri to return true
+        let self.success = true; 
         Some(self) 
     }
 
@@ -77,6 +83,8 @@ impl AuthUriBuilder {
             .add_scope(Scope::new(req.scope.unwrap()))
             .set_pkce_challenge(self.pkce.unwrap())
             .url();
+        // TODO - how to validate auth_uri to return true
+        let self.success = true;  
         Some(self) 
     }
 
@@ -88,10 +96,12 @@ impl AuthUriBuilder {
 
     pub fn generate_device_auth_uri(mut self) -> Self {
         let self.auth_uri = self.authorize_url(CsrfToken::new_random).url();
+        // TODO - how to validate auth_uri to return true
+        let self.success = true; 
         Some(self) 
     }
     pub fn build(self) -> AuthUri {
-        AuthUri { success: boolean, error: String, uri: self.auth_uri.0, csrf_state: self.auth_uri.1 }
+        AuthUri { success: self.success, uri: self.auth_uri.0, csrf_state: self.auth_uri.1 }
     }
 }
 
