@@ -49,6 +49,9 @@ pub struct AuthUriBuilder {
 }
 
 impl AuthUriBuilder {
+
+    // TODO - MAKE SURE THAT THERE IS LOGIC PREVENTING BUILDER STEPS FROM BEING CALLED FROM ONES THEY DON'T PAIR WITH
+
     pub fn new() -> AuthUriBuilder {
         AuthUriBuilder {
             client: None,
