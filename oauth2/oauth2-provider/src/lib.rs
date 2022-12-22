@@ -41,6 +41,7 @@ impl AuthUri {
 #[derive(Default)]
 pub struct AuthUriBuilder {
     client: Option<oauth2::basic::BasicClient>,
+    // may need another field for device uri
     auth_uri: Option<(Url, CsrfToken)>,
     pkce: Option<(PkceCodeChallenge, PkceCodeVerifier)>,
     success: bool,
@@ -61,21 +62,21 @@ impl AuthUriBuilder {
     pub fn create_client(mut self, req: &GetAuthUriRequest) -> Self {
         self.client = Some(BasicClient::new(
             ClientId::new(req.client_id),
-            Some(ClientSecret::new(req.client_secret)),
-            AuthUrl::new(req.auth_uri.unwrap()).expect("Invalid authorization endpoint URL"),
+            Some(ClientSecret::new(req.client_secret.unwrap())),
+            AuthUrl::new(req.auth_uri).expect("Invalid authorization endpoint URL"),
             Some(TokenUrl::new(req.token_uri).expect("Invalid authorization endpoint URL")),
         ));
         self
     }
 
     pub fn set_redirect_uri(mut self, req: &GetAuthUriRequest) -> Self {
-        self.client = Some(self.set_redirect_uri(
+        self.client = Some(self.client.unwrap().set_redirect_uri(
                     RedirectUrl::new(req.auth_uri).expect("Invalid redirect URL")));
         self    
     }
 
     pub fn generate_auth_uri(mut self, req: &GetAuthUriRequest) -> Self {
-        self.auth_uri = Some(self
+        self.auth_uri = Some(self.client.unwrap()
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(req.scope))
             .url());
@@ -91,10 +92,10 @@ impl AuthUriBuilder {
     }
 
     pub fn generate_auth_uri_pkce(mut self, req: &GetAuthUriRequest) -> Self {
-        self.auth_uri = Some(self
+        self.auth_uri = Some(self.client.unwrap()
             .authorize_url(CsrfToken::new_random)
             .add_scope(Scope::new(req.scope))
-            .set_pkce_challenge(self.pkce.unwrap())
+            .set_pkce_challenge(self.pkce.unwrap().0)
             .url());
 
         // TODO - how to validate auth_uri to return true
@@ -103,8 +104,11 @@ impl AuthUriBuilder {
     }
 
     pub fn set_device_uri(mut self, req: &GetAuthUriRequest) -> Self {
-        self.client = Some(self.set_device_authorization_url(DeviceAuthorizationUrl::new(req.auth_uri)).expect("Invalid redirect URL"));
-        self        
+        unimplemented!();
+
+        // TODO - https://docs.rs/oauth2/latest/oauth2/#device-code-flow
+        // self.client = Some(self.client.unwrap().set_device_authorization_url(DeviceAuthorizationUrl::new(req.auth_uri)).expect("Invalid redirect URL"));
+        // self        
     }
 
     pub fn generate_device_auth_uri(mut self) -> Self {
@@ -123,7 +127,7 @@ impl AuthUriBuilder {
         // self 
     }
     pub fn build(self) -> AuthUri {
-        AuthUri { success: self.success, error: self.error, uri: self.auth_uri.0, csrf_state: self.auth_uri.1 }
+        AuthUri { success: self.success, error: self.error, uri: self.auth_uri.unwrap().0.to_string(), csrf_state: self.auth_uri.unwrap().1 }
     }
 }
 
