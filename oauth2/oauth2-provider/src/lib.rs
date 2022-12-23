@@ -22,6 +22,8 @@ use url::Url;
 use std::str::FromStr;
 use wasmbus_rpc::provider::prelude::*;
 
+// TODO - Convert fn outputs to Result<Self, Box<dyn Error>> and use anyhow for errors instead of .expect().
+
 #[derive(Default)]
 pub struct AuthUriBuilder {
     // Basic Client Struct - Client<BasicErrorResponse, BasicTokenResponse, BasicTokenType, BasicTokenIntrospectionResponse, StandardRevocableToken, BasicRevocationErrorResponse>
@@ -107,7 +109,7 @@ impl AuthUriBuilder {
             Some(ClientSecret::new(req.client_secret.to_owned().unwrap())),
             AuthUrl::new(req.auth_uri.to_owned()).expect("Invalid authorization endpoint URL"),
             Some(TokenUrl::new(req.token_uri.to_owned()).expect("Invalid authorization endpoint URL")),
-        ).set_device_authorization_url(DeviceAuthorizationUrl::new(req.device_auth_uri.to_owned())?).expect("Invalid redirect URL"));
+        ).set_device_authorization_url(DeviceAuthorizationUrl::new(req.device_auth_uri.to_owned()).expect("Invalid device authorization endpoint URL")).expect("Invalid redirect URL"));
         self        
     }
 
