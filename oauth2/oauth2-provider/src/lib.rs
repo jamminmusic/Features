@@ -25,6 +25,7 @@ use wasmbus_rpc::provider::prelude::*;
 #[derive(Default)]
 pub struct AuthUriBuilder {
     // Basic Client Struct - Client<BasicErrorResponse, BasicTokenResponse, BasicTokenType, BasicTokenIntrospectionResponse, StandardRevocableToken, BasicRevocationErrorResponse>
+    // Client Struct - { client_id: ClientId, client_secret: Option<ClientSecret>, auth_url: AuthUrl, auth_type: AuthType, token_url: Option<TokenUrl>, redirect_url: Option<RedirectUrl>, introspection_url: Option<IntrospectionUrl>, revocation_url: Option<RevocationUrl>, device_authorization_url: Option<DeviceAuthorizationUrl>, phantom: PhantomData<(TE, TR, TT, TIR, RT, TRE)>}
     client: Option<oauth2::basic::BasicClient>,
     // may need another field for device uri
     auth_uri: Option<(Url, CsrfToken)>,
@@ -32,6 +33,8 @@ pub struct AuthUriBuilder {
     pkce_verifier:Option<PkceCodeVerifier>,
     success: bool,
     error: Option<String>
+    // (verification_url, UserCode)
+    device_auth_uri: Option<(Url, String)>
 }
 
 impl AuthUriBuilder {
@@ -99,30 +102,37 @@ impl AuthUriBuilder {
         unimplemented!();
 
         // TODO - https://docs.rs/oauth2/latest/oauth2/#device-code-flow
-        // self.client = Some(self.client.unwrap().set_device_authorization_url(DeviceAuthorizationUrl::new(req.auth_uri)).expect("Invalid redirect URL"));
-        // self        
+        self.client = Some( BasicClient::new(
+            ClientId::new(req.client_id.to_owned()),
+            Some(ClientSecret::new(req.client_secret.to_owned().unwrap())),
+            AuthUrl::new(req.auth_uri.to_owned()).expect("Invalid authorization endpoint URL"),
+            Some(TokenUrl::new(req.token_uri.to_owned()).expect("Invalid authorization endpoint URL")),
+        ).set_device_authorization_url(DeviceAuthorizationUrl::new(req.device_auth_uri.to_owned())?).expect("Invalid redirect URL"));
+        self        
     }
 
-    pub fn generate_device_auth_uri(mut self) -> Self {
-        unimplemented!();
-
-        // // TODO - https://docs.rs/oauth2/latest/oauth2/#device-code-flow
-        // self.auth_uri = Some(self
-        //     // look this up
-        //     .exchange_device_code()
-        //     .add_scope(Scope::new("read".to_string()))
-        //     // look this up
-        //     .request(http_client));
-
-        // // TODO - how to validate auth_uri to return true
-        // self.success = true; 
-        // self 
+    pub fn generate_device_auth_uri(mut self, req: &GetAuthUriRequest) -> Self {
+        // TODO - https://docs.rs/oauth2/latest/oauth2/#device-code-flow
+        // DeviceAuthorizationResponse struct - { device_code: DeviceCode, user_code: UserCode, verification_uri: EndUserVerificationUrl, verification_uri_complete: Option<VerificationUriComplete>, expires_in: u64, interval: u64, extra_fields: EF }
+        let details: StandardDeviceAuthorizationResponse = self.client
+            // The device verification code
+            .exchange_device_code()
+            .add_scope(Scope::new(req.scope.to_owned()))
+            // look this up
+            .request_async(http_client)
+            .await;
+        // need to send verification uri and user code to user - the rest needs to be stored for later for token exhange.
+        self.auth_uri = Some(details);
+        // TODO - how to validate auth_uri to return true
+        self.success = true; 
+        self 
     }
     pub fn build(self) -> GetAuthUriResponse {
         GetAuthUriResponse { 
             success: self.success, error: self.error,
             // need to create a smithy model for CsrfToken, or create one as a string - https://docs.rs/oauth2/latest/oauth2/struct.CsrfToken.html#method.secret
-            uri: Some(self.auth_uri.to_owned().unwrap().0.to_string()), csrf_state: self.auth_uri.to_owned().unwrap().1.secret().to_string() 
+            uri: Some(self.auth_uri.to_owned().unwrap().0.to_string()), csrf_state: self.auth_uri.to_owned().unwrap().1.secret().to_string(),
+            device_uri: self.device_uri, device_usercode: self.device_usercode,
         }
     }
 }
@@ -183,6 +193,7 @@ impl AuthUserBuilder {
     async fn token_exchange(){
         unimplemented!();
 
+        // client here  = (auth_url, csrf_token)
         // let token_result = client
         //     .exchange_code(AuthorizationCode::new("some authorization code".to_string()))
         //     // Set the PKCE code verifier.
@@ -193,7 +204,6 @@ impl AuthUserBuilder {
 
     // TODO
     async fn device_token_exchange(){
-
         unimplemented!();
         // let details: StandardDeviceAuthorizationResponse = client
         // .exchange_device_code()?

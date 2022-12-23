@@ -123,8 +123,8 @@ impl Oauth2 for Oauth2Provider {
         _req: &GetAuthUriRequest,
     ) -> RpcResult<GetAuthUriResponse> {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
-        //                    auth_url: String, token_url: String, redirect_url: String, scope: String }
-        // Response Struct - { success: Boolean, error: String, uri: String, csrf_state: String }
+        //                    auth_url: String, token_url: String, redirect_url: String, scope: String, device_auth_uri: String }
+        // Response Struct - { success: Boolean, error: String, uri: String, csrf_state: String, device_uri: String, device_usercode: String }
         let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_uri(&_req).await.unwrap();
         Ok(response)
     }

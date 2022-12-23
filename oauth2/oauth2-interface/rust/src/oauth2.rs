@@ -362,6 +362,8 @@ pub struct GetAuthUriRequest {
     pub redirect_uri: Option<String>,
     #[serde(default)]
     pub scope: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_auth_uri: Option<String>,
 }
 
 // Encode GetAuthUriRequest as CBOR and append to output stream
@@ -374,7 +376,7 @@ pub fn encode_get_auth_uri_request<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(8)?;
+    e.array(9)?;
     e.str(&val.grant_type)?;
     e.str(&val.client_id)?;
     if let Some(val) = val.device_code.as_ref() {
@@ -395,6 +397,11 @@ where
         e.null()?;
     }
     e.str(&val.scope)?;
+    if let Some(val) = val.device_auth_uri.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
     Ok(())
 }
 
@@ -412,6 +419,7 @@ pub fn decode_get_auth_uri_request(
         let mut token_uri: Option<String> = None;
         let mut redirect_uri: Option<Option<String>> = Some(None);
         let mut scope: Option<String> = None;
+        let mut device_auth_uri: Option<Option<String>> = Some(None);
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -455,6 +463,15 @@ pub fn decode_get_auth_uri_request(
                         }
                     }
                     7 => scope = Some(d.str()?.to_string()),
+                    8 => {
+                        device_auth_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+
                     _ => d.skip()?,
                 }
             }
@@ -491,6 +508,14 @@ pub fn decode_get_auth_uri_request(
                         }
                     }
                     "scope" => scope = Some(d.str()?.to_string()),
+                    "device_auth_uri" => {
+                        device_auth_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     _ => d.skip()?,
                 }
             }
@@ -538,6 +563,7 @@ pub fn decode_get_auth_uri_request(
                     "missing field GetAuthUriRequest.scope (#7)".to_string(),
                 ));
             },
+            device_auth_uri: device_auth_uri.unwrap(),
         }
     };
     Ok(__result)
@@ -552,6 +578,10 @@ pub struct GetAuthUriResponse {
     pub uri: Option<String>,
     #[serde(default)]
     pub csrf_state: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_uri: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_usercode: Option<String>,
 }
 
 // Encode GetAuthUriResponse as CBOR and append to output stream
@@ -564,7 +594,7 @@ pub fn encode_get_auth_uri_response<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(4)?;
+    e.array(6)?;
     e.bool(val.success)?;
     if let Some(val) = val.error.as_ref() {
         e.str(val)?;
@@ -577,6 +607,16 @@ where
         e.null()?;
     }
     e.str(&val.csrf_state)?;
+    if let Some(val) = val.device_uri.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    if let Some(val) = val.device_usercode.as_ref() {
+        e.str(val)?;
+    } else {
+        e.null()?;
+    }
     Ok(())
 }
 
@@ -590,6 +630,8 @@ pub fn decode_get_auth_uri_response(
         let mut error: Option<Option<String>> = Some(None);
         let mut uri: Option<Option<String>> = Some(None);
         let mut csrf_state: Option<String> = None;
+        let mut device_uri: Option<Option<String>> = Some(None);
+        let mut device_usercode: Option<Option<String>> = Some(None);
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -622,6 +664,23 @@ pub fn decode_get_auth_uri_response(
                         }
                     }
                     3 => csrf_state = Some(d.str()?.to_string()),
+                    4 => {
+                        device_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    5 => {
+                        device_usercode = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+
                     _ => d.skip()?,
                 }
             }
@@ -647,6 +706,22 @@ pub fn decode_get_auth_uri_response(
                         }
                     }
                     "csrf_state" => csrf_state = Some(d.str()?.to_string()),
+                    "device_uri" => {
+                        device_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "device_usercode" => {
+                        device_usercode = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.str()?.to_string()))
+                        }
+                    }
                     _ => d.skip()?,
                 }
             }
@@ -669,6 +744,8 @@ pub fn decode_get_auth_uri_response(
                     "missing field GetAuthUriResponse.csrf_state (#3)".to_string(),
                 ));
             },
+            device_uri: device_uri.unwrap(),
+            device_usercode: device_usercode.unwrap(),
         }
     };
     Ok(__result)

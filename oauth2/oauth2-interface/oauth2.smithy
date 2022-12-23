@@ -66,6 +66,9 @@ structure GetAuthUriRequest {
   @n(7)
   @required
   scope: String
+  
+  @n(8)
+  device_auth_uri: String
 }
 
 structure GetAuthUriResponse {
@@ -89,6 +92,14 @@ structure GetAuthUriResponse {
   @sensitive
   @required
   csrf_state: String
+
+  @n(4)
+  @sensitive
+  device_uri: String
+
+  @n(5)
+  @sensitive
+  device_usercode: String
 }
 
 operation AuthorizeUser {
