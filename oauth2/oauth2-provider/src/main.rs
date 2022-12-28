@@ -3,7 +3,7 @@
 //!
 use oauth2_interface::{
     AuthorizeUserRequest, AuthorizeUserResponse, 
-    GetAuthUriRequest, GetAuthUriResponse, 
+    GetAuthUrlRequest, GetAuthUrlResponse, 
     Oauth2, Oauth2Receiver, 
     UnauthorizeUserRequest, UnauthorizeUserResponse 
 };
@@ -11,7 +11,7 @@ use strum::EnumString;
 use std::str::FromStr;
 use anyhow::Error;
 use serde::Deserialize;
-use oauth2_provider::AuthUriBuilder;
+use oauth2_provider::AuthUrlBuilder;
 
 #[allow(unused_imports)]
 use wasmbus_rpc::provider::prelude::*;
@@ -42,26 +42,26 @@ pub enum GrantType {
 }
 
 impl GrantType {
-    pub async fn get_auth_uri(&self, req: &GetAuthUriRequest) -> Result<GetAuthUriResponse, Error>{
-        let auth_uri_response = match self {
-            // User Flow - User interaction with auth_uri needed.
+    pub async fn get_auth_url(&self, req: &GetAuthUrlRequest) -> Result<GetAuthUrlResponse, Error>{
+        let auth_url_response = match self {
+            // User Flow - User interaction with auth_url needed.
             //Just remove PKCE code from https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
-            GrantType::AuthorizationCode => AuthUriBuilder::new().create_client(req).set_redirect_uri(req).generate_auth_uri(req).build(),
-            // User Flow + Pkce - User interaction with auth_uri needed and will contain code challenge. Most secure User Flow.
+            GrantType::AuthorizationCode => AuthUrlBuilder::new().create_client(req).set_redirect_url(req).generate_auth_url(req).build(),
+            // User Flow + Pkce - User interaction with auth_url needed and will contain code challenge. Most secure User Flow.
             // https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
-            GrantType::Pkce => AuthUriBuilder::new().create_client(req).set_redirect_uri(req).generate_pkce().generate_auth_uri_pkce(req).build(),
-            // Refresh Flow - If client was issued a secret User interaction with auth_uri needed, otherwise User interaction with auth_uri not needed. 
+            GrantType::Pkce => AuthUrlBuilder::new().create_client(req).set_redirect_url(req).generate_pkce().generate_auth_url_pkce(req).build(),
+            // Refresh Flow - If client was issued a secret User interaction with auth_url needed, otherwise User interaction with auth_url not needed. 
             // https://docs.rs/oauth2/4.3.0/oauth2/trait.TokenResponse.html#tymethod.refresh_token
-            GrantType::Refresh => AuthUriBuilder::new().create_client(req).generate_auth_uri(req).build(),
-            // Application Flow - User interaction with auth_uri not needed. Application as a client will pass client_id and secret for authentication.
+            GrantType::Refresh => AuthUrlBuilder::new().create_client(req).generate_auth_url(req).build(),
+            // Application Flow - User interaction with auth_url not needed. Application as a client will pass client_id and secret for authentication.
             // https://docs.rs/oauth2/4.3.0/oauth2/#client-credentials-grant
-            // client_secret is an option when creating the Client, therefore we can handle whether a user needs to interact outside of URI generation.
-            GrantType::ClientCredentials => AuthUriBuilder::new().create_client(req).generate_auth_uri(req).build(),
-            // Device Flow - User interaction with auth_uri needed - authenticate on browserless or input-constrained devices.
+            // client_secret is an option when creating the Client, therefore we can handle whether a user needs to interact outside of URL generation.
+            GrantType::ClientCredentials => AuthUrlBuilder::new().create_client(req).generate_auth_url(req).build(),
+            // Device Flow - User interaction with auth_url needed - authenticate on browserless or input-constrained devices.
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
-            GrantType::DeviceCode => AuthUriBuilder::new().create_client(req).set_device_uri(req).generate_device_auth_uri().build(),
+            GrantType::DeviceCode => AuthUrlBuilder::new().create_client(req).set_device_url(req).generate_device_auth_url().build(),
         };
-        Ok(auth_uri_response)
+        Ok(auth_url_response)
     }
     // TODO
     pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result<AuthorizeUserResponse, Error> {
@@ -113,15 +113,15 @@ impl ProviderHandler for Oauth2Provider {}
 /// Handle Oauth2 methods
 #[async_trait]
 impl Oauth2 for Oauth2Provider {
-    async fn get_auth_uri(
+    async fn get_auth_url(
         &self,
         _ctx: &Context,
-        _req: &GetAuthUriRequest,
-    ) -> RpcResult<GetAuthUriResponse> {
+        _req: &GetAuthUrlRequest,
+    ) -> RpcResult<GetAuthUrlResponse> {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
-        //                    auth_url: String, token_url: String, redirect_url: String, scope: String, device_auth_uri: String }
-        // Response Struct - { success: Boolean, error: String, uri: String, csrf_state: String, device_uri: String, device_code: String, device_code_expire: U64 }
-        let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_uri(&_req).await.unwrap();
+        //                    auth_url: String, token_url: String, redirect_url: String, scope: String, device_auth_url: String }
+        // Response Struct - { success: Boolean, error: String, url: String, csrf_state: String, device_url: String, device_code: String, device_code_expire: U64 }
+        let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_url(&_req).await.unwrap();
         Ok(response)
     }
 
@@ -134,7 +134,7 @@ impl Oauth2 for Oauth2Provider {
         // Request Struct - { grant_type: String, auth_code: String, state: String, csrf_state: String }
         // Response Struct - { success: Boolean, error: String, access_token: String, refresh_token: String, 
         //                     user_id: String, device_id: String, expire: String, scope: String }
-        // let response = GrantType::from_str(GetAuthUriRequest.grant_type).authorize_user().unwrap().await;
+        // let response = GrantType::from_str(GetAuthUrlRequest.grant_type).authorize_user().unwrap().await;
         // Ok(response)
     }
 
@@ -146,7 +146,7 @@ impl Oauth2 for Oauth2Provider {
         unimplemented!();
         // Request Struct - { user: String, device_id: String }
         // Response Struct - { success: Boolean, error: String }
-        // let response = GrantType::from_str(GetAuthUriRequest.grant_type).unauthorize_user().unwrap().await;
+        // let response = GrantType::from_str(GetAuthUrlRequest.grant_type).unauthorize_user().unwrap().await;
         // Ok(response)
     }
 }

@@ -344,7 +344,7 @@ pub fn decode_authorize_user_response(
     Ok(__result)
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-pub struct GetAuthUriRequest {
+pub struct GetAuthUrlRequest {
     /// OAuth2 Options: AuthorizationCode, PKCE, Refresh, ClientCredentials, DeviceCode
     #[serde(default)]
     pub grant_type: String,
@@ -355,23 +355,23 @@ pub struct GetAuthUriRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub client_secret: Option<String>,
     #[serde(default)]
-    pub auth_uri: String,
+    pub auth_url: String,
     #[serde(default)]
-    pub token_uri: String,
+    pub token_url: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub redirect_uri: Option<String>,
+    pub redirect_url: Option<String>,
     #[serde(default)]
     pub scope: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub device_auth_uri: Option<String>,
+    pub device_auth_url: Option<String>,
 }
 
-// Encode GetAuthUriRequest as CBOR and append to output stream
+// Encode GetAuthUrlRequest as CBOR and append to output stream
 #[doc(hidden)]
 #[allow(unused_mut)]
-pub fn encode_get_auth_uri_request<W: wasmbus_rpc::cbor::Write>(
+pub fn encode_get_auth_url_request<W: wasmbus_rpc::cbor::Write>(
     mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
-    val: &GetAuthUriRequest,
+    val: &GetAuthUrlRequest,
 ) -> RpcResult<()>
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
@@ -389,15 +389,15 @@ where
     } else {
         e.null()?;
     }
-    e.str(&val.auth_uri)?;
-    e.str(&val.token_uri)?;
-    if let Some(val) = val.redirect_uri.as_ref() {
+    e.str(&val.auth_url)?;
+    e.str(&val.token_url)?;
+    if let Some(val) = val.redirect_url.as_ref() {
         e.str(val)?;
     } else {
         e.null()?;
     }
     e.str(&val.scope)?;
-    if let Some(val) = val.device_auth_uri.as_ref() {
+    if let Some(val) = val.device_auth_url.as_ref() {
         e.str(val)?;
     } else {
         e.null()?;
@@ -405,28 +405,28 @@ where
     Ok(())
 }
 
-// Decode GetAuthUriRequest from cbor input stream
+// Decode GetAuthUrlRequest from cbor input stream
 #[doc(hidden)]
-pub fn decode_get_auth_uri_request(
+pub fn decode_get_auth_url_request(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
-) -> Result<GetAuthUriRequest, RpcError> {
+) -> Result<GetAuthUrlRequest, RpcError> {
     let __result = {
         let mut grant_type: Option<String> = None;
         let mut client_id: Option<String> = None;
         let mut device_code: Option<Option<String>> = Some(None);
         let mut client_secret: Option<Option<String>> = Some(None);
-        let mut auth_uri: Option<String> = None;
-        let mut token_uri: Option<String> = None;
-        let mut redirect_uri: Option<Option<String>> = Some(None);
+        let mut auth_url: Option<String> = None;
+        let mut token_url: Option<String> = None;
+        let mut redirect_url: Option<Option<String>> = Some(None);
         let mut scope: Option<String> = None;
-        let mut device_auth_uri: Option<Option<String>> = Some(None);
+        let mut device_auth_url: Option<Option<String>> = Some(None);
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
             wasmbus_rpc::cbor::Type::Map => false,
             _ => {
                 return Err(RpcError::Deser(
-                    "decoding struct GetAuthUriRequest, expected array or map".to_string(),
+                    "decoding struct GetAuthUrlRequest, expected array or map".to_string(),
                 ))
             }
         };
@@ -452,10 +452,10 @@ pub fn decode_get_auth_uri_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    4 => auth_uri = Some(d.str()?.to_string()),
-                    5 => token_uri = Some(d.str()?.to_string()),
+                    4 => auth_url = Some(d.str()?.to_string()),
+                    5 => token_url = Some(d.str()?.to_string()),
                     6 => {
-                        redirect_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                        redirect_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -464,7 +464,7 @@ pub fn decode_get_auth_uri_request(
                     }
                     7 => scope = Some(d.str()?.to_string()),
                     8 => {
-                        device_auth_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                        device_auth_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -497,10 +497,10 @@ pub fn decode_get_auth_uri_request(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "auth_uri" => auth_uri = Some(d.str()?.to_string()),
-                    "token_uri" => token_uri = Some(d.str()?.to_string()),
-                    "redirect_uri" => {
-                        redirect_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                    "auth_url" => auth_url = Some(d.str()?.to_string()),
+                    "token_url" => token_url = Some(d.str()?.to_string()),
+                    "redirect_url" => {
+                        redirect_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -508,8 +508,8 @@ pub fn decode_get_auth_uri_request(
                         }
                     }
                     "scope" => scope = Some(d.str()?.to_string()),
-                    "device_auth_uri" => {
-                        device_auth_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                    "device_auth_url" => {
+                        device_auth_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -520,12 +520,12 @@ pub fn decode_get_auth_uri_request(
                 }
             }
         }
-        GetAuthUriRequest {
+        GetAuthUrlRequest {
             grant_type: if let Some(__x) = grant_type {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.grant_type (#0)".to_string(),
+                    "missing field GetAuthUrlRequest.grant_type (#0)".to_string(),
                 ));
             },
 
@@ -533,65 +533,65 @@ pub fn decode_get_auth_uri_request(
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.client_id (#1)".to_string(),
+                    "missing field GetAuthUrlRequest.client_id (#1)".to_string(),
                 ));
             },
             device_code: device_code.unwrap(),
             client_secret: client_secret.unwrap(),
 
-            auth_uri: if let Some(__x) = auth_uri {
+            auth_url: if let Some(__x) = auth_url {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.auth_uri (#4)".to_string(),
+                    "missing field GetAuthUrlRequest.auth_url (#4)".to_string(),
                 ));
             },
 
-            token_uri: if let Some(__x) = token_uri {
+            token_url: if let Some(__x) = token_url {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.token_uri (#5)".to_string(),
+                    "missing field GetAuthUrlRequest.token_url (#5)".to_string(),
                 ));
             },
-            redirect_uri: redirect_uri.unwrap(),
+            redirect_url: redirect_url.unwrap(),
 
             scope: if let Some(__x) = scope {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriRequest.scope (#7)".to_string(),
+                    "missing field GetAuthUrlRequest.scope (#7)".to_string(),
                 ));
             },
-            device_auth_uri: device_auth_uri.unwrap(),
+            device_auth_url: device_auth_url.unwrap(),
         }
     };
     Ok(__result)
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
-pub struct GetAuthUriResponse {
+pub struct GetAuthUrlResponse {
     #[serde(default)]
     pub success: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub uri: Option<String>,
+    pub url: Option<String>,
     #[serde(default)]
     pub csrf_state: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub device_uri: Option<String>,
+    pub device_url: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub device_code: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub device_code_expire: Option<u64>,
 }
 
-// Encode GetAuthUriResponse as CBOR and append to output stream
+// Encode GetAuthUrlResponse as CBOR and append to output stream
 #[doc(hidden)]
 #[allow(unused_mut)]
-pub fn encode_get_auth_uri_response<W: wasmbus_rpc::cbor::Write>(
+pub fn encode_get_auth_url_response<W: wasmbus_rpc::cbor::Write>(
     mut e: &mut wasmbus_rpc::cbor::Encoder<W>,
-    val: &GetAuthUriResponse,
+    val: &GetAuthUrlResponse,
 ) -> RpcResult<()>
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
@@ -603,13 +603,13 @@ where
     } else {
         e.null()?;
     }
-    if let Some(val) = val.uri.as_ref() {
+    if let Some(val) = val.url.as_ref() {
         e.str(val)?;
     } else {
         e.null()?;
     }
     e.str(&val.csrf_state)?;
-    if let Some(val) = val.device_uri.as_ref() {
+    if let Some(val) = val.device_url.as_ref() {
         e.str(val)?;
     } else {
         e.null()?;
@@ -627,17 +627,17 @@ where
     Ok(())
 }
 
-// Decode GetAuthUriResponse from cbor input stream
+// Decode GetAuthUrlResponse from cbor input stream
 #[doc(hidden)]
-pub fn decode_get_auth_uri_response(
+pub fn decode_get_auth_url_response(
     d: &mut wasmbus_rpc::cbor::Decoder<'_>,
-) -> Result<GetAuthUriResponse, RpcError> {
+) -> Result<GetAuthUrlResponse, RpcError> {
     let __result = {
         let mut success: Option<bool> = None;
         let mut error: Option<Option<String>> = Some(None);
-        let mut uri: Option<Option<String>> = Some(None);
+        let mut url: Option<Option<String>> = Some(None);
         let mut csrf_state: Option<String> = None;
-        let mut device_uri: Option<Option<String>> = Some(None);
+        let mut device_url: Option<Option<String>> = Some(None);
         let mut device_code: Option<Option<String>> = Some(None);
         let mut device_code_expire: Option<Option<u64>> = Some(None);
 
@@ -646,7 +646,7 @@ pub fn decode_get_auth_uri_response(
             wasmbus_rpc::cbor::Type::Map => false,
             _ => {
                 return Err(RpcError::Deser(
-                    "decoding struct GetAuthUriResponse, expected array or map".to_string(),
+                    "decoding struct GetAuthUrlResponse, expected array or map".to_string(),
                 ))
             }
         };
@@ -664,7 +664,7 @@ pub fn decode_get_auth_uri_response(
                         }
                     }
                     2 => {
-                        uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                        url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -673,7 +673,7 @@ pub fn decode_get_auth_uri_response(
                     }
                     3 => csrf_state = Some(d.str()?.to_string()),
                     4 => {
-                        device_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                        device_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -713,8 +713,8 @@ pub fn decode_get_auth_uri_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "uri" => {
-                        uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                    "url" => {
+                        url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -722,8 +722,8 @@ pub fn decode_get_auth_uri_response(
                         }
                     }
                     "csrf_state" => csrf_state = Some(d.str()?.to_string()),
-                    "device_uri" => {
-                        device_uri = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                    "device_url" => {
+                        device_url = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
@@ -750,25 +750,25 @@ pub fn decode_get_auth_uri_response(
                 }
             }
         }
-        GetAuthUriResponse {
+        GetAuthUrlResponse {
             success: if let Some(__x) = success {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriResponse.success (#0)".to_string(),
+                    "missing field GetAuthUrlResponse.success (#0)".to_string(),
                 ));
             },
             error: error.unwrap(),
-            uri: uri.unwrap(),
+            url: url.unwrap(),
 
             csrf_state: if let Some(__x) = csrf_state {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field GetAuthUriResponse.csrf_state (#3)".to_string(),
+                    "missing field GetAuthUrlResponse.csrf_state (#3)".to_string(),
                 ));
             },
-            device_uri: device_uri.unwrap(),
+            device_url: device_url.unwrap(),
             device_code: device_code.unwrap(),
             device_code_expire: device_code_expire.unwrap(),
         }
@@ -995,11 +995,11 @@ pub trait Oauth2 {
         ctx: &Context,
         arg: &UnauthorizeUserRequest,
     ) -> RpcResult<UnauthorizeUserResponse>;
-    async fn get_auth_uri(
+    async fn get_auth_url(
         &self,
         ctx: &Context,
-        arg: &GetAuthUriRequest,
-    ) -> RpcResult<GetAuthUriResponse>;
+        arg: &GetAuthUrlRequest,
+    ) -> RpcResult<GetAuthUrlResponse>;
 }
 
 /// Oauth2Receiver receives messages defined in the Oauth2 service trait
@@ -1027,11 +1027,11 @@ pub trait Oauth2Receiver: MessageDispatch + Oauth2 {
 
                 Ok(buf)
             }
-            "GetAuthUri" => {
-                let value: GetAuthUriRequest = wasmbus_rpc::common::deserialize(&message.arg)
-                    .map_err(|e| RpcError::Deser(format!("'GetAuthUriRequest': {}", e)))?;
+            "GetAuthUrl" => {
+                let value: GetAuthUrlRequest = wasmbus_rpc::common::deserialize(&message.arg)
+                    .map_err(|e| RpcError::Deser(format!("'GetAuthUrlRequest': {}", e)))?;
 
-                let resp = Oauth2::get_auth_uri(self, ctx, &value).await?;
+                let resp = Oauth2::get_auth_url(self, ctx, &value).await?;
                 let buf = wasmbus_rpc::common::serialize(&resp)?;
 
                 Ok(buf)
@@ -1158,11 +1158,11 @@ impl<T: Transport + std::marker::Sync + std::marker::Send> Oauth2 for Oauth2Send
         Ok(value)
     }
     #[allow(unused)]
-    async fn get_auth_uri(
+    async fn get_auth_url(
         &self,
         ctx: &Context,
-        arg: &GetAuthUriRequest,
-    ) -> RpcResult<GetAuthUriResponse> {
+        arg: &GetAuthUrlRequest,
+    ) -> RpcResult<GetAuthUrlResponse> {
         let buf = wasmbus_rpc::common::serialize(arg)?;
 
         let resp = self
@@ -1170,15 +1170,15 @@ impl<T: Transport + std::marker::Sync + std::marker::Send> Oauth2 for Oauth2Send
             .send(
                 ctx,
                 Message {
-                    method: "Oauth2.GetAuthUri",
+                    method: "Oauth2.GetAuthUrl",
                     arg: Cow::Borrowed(&buf),
                 },
                 None,
             )
             .await?;
 
-        let value: GetAuthUriResponse = wasmbus_rpc::common::deserialize(&resp)
-            .map_err(|e| RpcError::Deser(format!("'{}': GetAuthUriResponse", e)))?;
+        let value: GetAuthUrlResponse = wasmbus_rpc::common::deserialize(&resp)
+            .map_err(|e| RpcError::Deser(format!("'{}': GetAuthUrlResponse", e)))?;
         Ok(value)
     }
 }

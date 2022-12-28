@@ -20,15 +20,15 @@ use org.wasmcloud.model#n
     providerReceive: true )
 service Oauth2 {
   version: "0.1",
-  operations: [ AuthorizeUser, UnauthorizeUser, GetAuthUri ]
+  operations: [ AuthorizeUser, UnauthorizeUser, GetAuthUrl ]
 }
 
-operation GetAuthUri {
-  input: GetAuthUriRequest,
-  output: GetAuthUriResponse,
+operation GetAuthUrl {
+  input: GetAuthUrlRequest,
+  output: GetAuthUrlResponse,
 }
 
-structure GetAuthUriRequest {
+structure GetAuthUrlRequest {
   // If using cbor serialization, and all the fields have @n references, 
   // the struct is serialized as an array (without field names), so it’s much more compact and faster.
   // Schema evolution: If you modify the struct and add a field, as long as you keep the numbers of 
@@ -54,24 +54,24 @@ structure GetAuthUriRequest {
 
   @n(4)
   @required
-  auth_uri: String
+  auth_url: String
 
   @n(5)
   @required
-  token_uri: String
+  token_url: String
 
   @n(6)
-  redirect_uri: String
+  redirect_url: String
 
   @n(7)
   @required
   scope: String
   
   @n(8)
-  device_auth_uri: String
+  device_auth_url: String
 }
 
-structure GetAuthUriResponse {
+structure GetAuthUrlResponse {
   // If using cbor serialization, and all the fields have @n references, 
   // the struct is serialized as an array (without field names), so it’s much more compact and faster.
   // Schema evolution: If you modify the struct and add a field, as long as you keep the numbers of 
@@ -85,7 +85,7 @@ structure GetAuthUriResponse {
 
   @n(2)
   @sensitive
-  uri: String
+  url: String
 
   // store state in SurrealDB or KV to compare later
   @n(3)
@@ -95,7 +95,7 @@ structure GetAuthUriResponse {
 
   @n(4)
   @sensitive
-  device_uri: String
+  device_url: String
 
   // device user code
   @n(5)
