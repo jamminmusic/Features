@@ -61,7 +61,6 @@ impl GrantType {
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
             GrantType::DeviceCode => AuthUriBuilder::new().create_client(req).set_device_uri(req).generate_device_auth_uri().build(),
         };
-        // Response Struct - { success: boolean, error: String, uri: String, csrf_state: String }       
         Ok(auth_uri_response)
     }
     // TODO
@@ -80,8 +79,6 @@ impl GrantType {
         //     // 
         //     GrantType::DeviceCode => "Define functions to call",
         // };
-        // // Response Struct - { success: boolean, error: String, access_token: String, refresh_token: String, 
-        // // user_id: String, device_id: String, scope: String } 
         // Ok(AuthorizeUserResponse)
     }
     // TODO
@@ -100,7 +97,6 @@ impl GrantType {
         //     // 
         //     GrantType::DeviceCode => "Define functions to call",
         // };
-        // // Response Struct - { success: boolean, error: String } 
         // Ok(UnauthorizeUserResponse)
     }
 }
@@ -124,7 +120,7 @@ impl Oauth2 for Oauth2Provider {
     ) -> RpcResult<GetAuthUriResponse> {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
         //                    auth_url: String, token_url: String, redirect_url: String, scope: String, device_auth_uri: String }
-        // Response Struct - { success: Boolean, error: String, uri: String, csrf_state: String, device_uri: String, device_usercode: String }
+        // Response Struct - { success: Boolean, error: String, uri: String, csrf_state: String, device_uri: String, device_code: String, device_code_expire: U64 }
         let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_uri(&_req).await.unwrap();
         Ok(response)
     }
@@ -137,7 +133,7 @@ impl Oauth2 for Oauth2Provider {
         unimplemented!();
         // Request Struct - { grant_type: String, auth_code: String, state: String, csrf_state: String }
         // Response Struct - { success: Boolean, error: String, access_token: String, refresh_token: String, 
-        //                     user_id: String, device_id: String, expire_date: String, scope: String }
+        //                     user_id: String, device_id: String, expire: String, scope: String }
         // let response = GrantType::from_str(GetAuthUriRequest.grant_type).authorize_user().unwrap().await;
         // Ok(response)
     }

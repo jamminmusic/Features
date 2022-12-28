@@ -149,7 +149,7 @@ pub struct AuthorizeUserResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub device_id: Option<String>,
     #[serde(default)]
-    pub expire_date: String,
+    pub expire: u64,
     #[serde(default)]
     pub scope: String,
 }
@@ -187,7 +187,7 @@ where
     } else {
         e.null()?;
     }
-    e.str(&val.expire_date)?;
+    e.u64(val.expire)?;
     e.str(&val.scope)?;
     Ok(())
 }
@@ -204,7 +204,7 @@ pub fn decode_authorize_user_response(
         let mut refresh_token: Option<Option<String>> = Some(None);
         let mut user_id: Option<Option<String>> = Some(None);
         let mut device_id: Option<Option<String>> = Some(None);
-        let mut expire_date: Option<String> = None;
+        let mut expire: Option<u64> = None;
         let mut scope: Option<String> = None;
 
         let is_array = match d.datatype()? {
@@ -254,7 +254,7 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    6 => expire_date = Some(d.str()?.to_string()),
+                    6 => expire = Some(d.u64()?),
                     7 => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
@@ -297,7 +297,7 @@ pub fn decode_authorize_user_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "expire_date" => expire_date = Some(d.str()?.to_string()),
+                    "expire" => expire = Some(d.u64()?),
                     "scope" => scope = Some(d.str()?.to_string()),
                     _ => d.skip()?,
                 }
@@ -324,11 +324,11 @@ pub fn decode_authorize_user_response(
             user_id: user_id.unwrap(),
             device_id: device_id.unwrap(),
 
-            expire_date: if let Some(__x) = expire_date {
+            expire: if let Some(__x) = expire {
                 __x
             } else {
                 return Err(RpcError::Deser(
-                    "missing field AuthorizeUserResponse.expire_date (#6)".to_string(),
+                    "missing field AuthorizeUserResponse.expire (#6)".to_string(),
                 ));
             },
 
@@ -581,7 +581,9 @@ pub struct GetAuthUriResponse {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub device_uri: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub device_usercode: Option<String>,
+    pub device_code: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub device_code_expire: Option<u64>,
 }
 
 // Encode GetAuthUriResponse as CBOR and append to output stream
@@ -594,7 +596,7 @@ pub fn encode_get_auth_uri_response<W: wasmbus_rpc::cbor::Write>(
 where
     <W as wasmbus_rpc::cbor::Write>::Error: std::fmt::Display,
 {
-    e.array(6)?;
+    e.array(7)?;
     e.bool(val.success)?;
     if let Some(val) = val.error.as_ref() {
         e.str(val)?;
@@ -612,8 +614,13 @@ where
     } else {
         e.null()?;
     }
-    if let Some(val) = val.device_usercode.as_ref() {
+    if let Some(val) = val.device_code.as_ref() {
         e.str(val)?;
+    } else {
+        e.null()?;
+    }
+    if let Some(val) = val.device_code_expire.as_ref() {
+        e.u64(*val)?;
     } else {
         e.null()?;
     }
@@ -631,7 +638,8 @@ pub fn decode_get_auth_uri_response(
         let mut uri: Option<Option<String>> = Some(None);
         let mut csrf_state: Option<String> = None;
         let mut device_uri: Option<Option<String>> = Some(None);
-        let mut device_usercode: Option<Option<String>> = Some(None);
+        let mut device_code: Option<Option<String>> = Some(None);
+        let mut device_code_expire: Option<Option<u64>> = Some(None);
 
         let is_array = match d.datatype()? {
             wasmbus_rpc::cbor::Type::Array => true,
@@ -673,11 +681,19 @@ pub fn decode_get_auth_uri_response(
                         }
                     }
                     5 => {
-                        device_usercode = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                        device_code = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
                             Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    6 => {
+                        device_code_expire = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.u64()?))
                         }
                     }
 
@@ -714,12 +730,20 @@ pub fn decode_get_auth_uri_response(
                             Some(Some(d.str()?.to_string()))
                         }
                     }
-                    "device_usercode" => {
-                        device_usercode = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                    "device_code" => {
+                        device_code = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
                             d.skip()?;
                             Some(None)
                         } else {
                             Some(Some(d.str()?.to_string()))
+                        }
+                    }
+                    "device_code_expire" => {
+                        device_code_expire = if wasmbus_rpc::cbor::Type::Null == d.datatype()? {
+                            d.skip()?;
+                            Some(None)
+                        } else {
+                            Some(Some(d.u64()?))
                         }
                     }
                     _ => d.skip()?,
@@ -745,7 +769,8 @@ pub fn decode_get_auth_uri_response(
                 ));
             },
             device_uri: device_uri.unwrap(),
-            device_usercode: device_usercode.unwrap(),
+            device_code: device_code.unwrap(),
+            device_code_expire: device_code_expire.unwrap(),
         }
     };
     Ok(__result)

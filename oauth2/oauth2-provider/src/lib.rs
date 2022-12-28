@@ -34,7 +34,7 @@ pub struct AuthUriBuilder {
     pkce: Option<PkceCodeChallenge>,
     pkce_verifier:Option<PkceCodeVerifier>,
     success: bool,
-    error: Option<String>
+    error: Option<String>,
     // (verification_url, UserCode)
     device_auth_uri: Option<(Url, String)>
 }

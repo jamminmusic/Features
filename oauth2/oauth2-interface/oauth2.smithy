@@ -97,9 +97,14 @@ structure GetAuthUriResponse {
   @sensitive
   device_uri: String
 
+  // device user code
   @n(5)
   @sensitive
-  device_usercode: String
+  device_code: String
+
+  // device user code expire time
+  @n(6)
+  device_code_expire: U64
 }
 
 operation AuthorizeUser {
@@ -164,9 +169,10 @@ structure AuthorizeUserResponse {
   @sensitive
   device_id: String
 
+  // token expire time
   @n(6)
   @required
-  expire_date: String
+  expire: U64
 
   @n(7)
   @required
