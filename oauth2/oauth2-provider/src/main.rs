@@ -59,7 +59,7 @@ impl GrantType {
             GrantType::ClientCredentials => AuthUrlBuilder::new().create_client(req).generate_auth_url(req).build(),
             // Device Flow - User interaction with auth_url needed - authenticate on browserless or input-constrained devices.
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
-            GrantType::DeviceCode => AuthUrlBuilder::new().create_client(req).set_device_url(req).generate_device_auth_url().build(),
+            GrantType::DeviceCode => todo!(), // AuthUrlBuilder::new().create_client(req).set_device_url(req).generate_device_auth_url().build(),
         };
         Ok(auth_url_response)
     }
@@ -121,6 +121,7 @@ impl Oauth2 for Oauth2Provider {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
         //                    auth_url: String, token_url: String, redirect_url: String, scope: String, device_auth_url: String }
         // Response Struct - { success: Boolean, error: String, url: String, csrf_state: String, device_url: String, device_code: String, device_code_expire: U64 }
+        // Device Flow is not yet implemented
         let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_url(&_req).await.unwrap();
         Ok(response)
     }
