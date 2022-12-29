@@ -249,9 +249,5 @@ impl AuthUserBuilder {
 //-----------UNIT TESTS-----------------
 #[test]
 fn builder_test() {
-    let foo = Foo {
-        bar: String::from("Y"),
-    };
-    let foo_from_builder: Foo = FooBuilder::new().name(String::from("Y")).build();
-    assert_eq!(foo, foo_from_builder);
+    todo!()
 }
