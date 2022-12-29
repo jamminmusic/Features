@@ -102,7 +102,7 @@ impl AuthUrlBuilder {
     }
 
     // pub fn set_device_url(mut self, req: &GetAuthUrlRequest) -> Self {
-    //     unimplemented!();
+    //     todo!();
 
     //     // TODO - https://docs.rs/oauth2/latest/oauth2/#device-code-flow
     //     self.client = Some( BasicClient::new(
@@ -115,6 +115,7 @@ impl AuthUrlBuilder {
     // }
 
     // pub fn generate_device_auth_url(mut self, req: &GetAuthUrlRequest) -> Self {
+    //      todo!();
     //     // TODO - https://docs.rs/oauth2/latest/oauth2/#device-code-flow
     //     // DeviceAuthorizationResponse struct - { device_code: DeviceCode, user_code: UserCode, verification_url: EndUserVerificationUrl, verification_url_complete: Option<VerificationUrlComplete>, expires_in: u64, interval: u64, extra_fields: EF }
     //     let details: StandardDeviceAuthorizationResponse = self.client
@@ -183,7 +184,7 @@ impl AuthUserBuilder {
     }
     // TODO
     async fn compare_csrf_state(){
-        unimplemented!();
+        todo!();
 
         // if csrf_state == state {
         //     // OK
@@ -195,7 +196,7 @@ impl AuthUserBuilder {
 
     // TODO - Only supporting Bearer Tokens
     async fn token_exchange(){
-        unimplemented!();
+        todo!();
 
         // client here  = (auth_url, csrf_token)
         // let token_result = client
@@ -208,7 +209,7 @@ impl AuthUserBuilder {
 
     // TODO
     async fn device_token_exchange(){
-        unimplemented!();
+        todo!();
         // let details: StandardDeviceAuthorizationResponse = client
         // .exchange_device_code()?
         // .add_scope(Scope::new("read".to_string()))
