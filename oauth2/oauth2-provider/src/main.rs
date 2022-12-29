@@ -1,12 +1,9 @@
 //! Oauth2 capability provider
 //!
 //!
-use oauth2_interface::{
-    AuthorizeUserRequest, AuthorizeUserResponse, 
-    GetAuthUrlRequest, GetAuthUrlResponse, 
-    Oauth2, Oauth2Receiver, 
-    UnauthorizeUserRequest, UnauthorizeUserResponse 
-};
+// Device Flow is not yet implemented
+
+use oauth2_interface::*;
 use strum::EnumString;
 use std::str::FromStr;
 use anyhow::Error;
@@ -121,7 +118,6 @@ impl Oauth2 for Oauth2Provider {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
         //                    auth_url: String, token_url: String, redirect_url: String, scope: String, device_auth_url: String }
         // Response Struct - { success: Boolean, error: String, url: String, csrf_state: String, device_url: String, device_code: String, device_code_expire: U64 }
-        // Device Flow is not yet implemented
         let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_url(&_req).await.unwrap();
         Ok(response)
     }

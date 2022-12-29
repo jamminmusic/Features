@@ -1,4 +1,9 @@
 use wasmbus_rpc::provider::prelude::*;
+use oauth2_interface::*;
+// AuthorizeUserRequest, AuthorizeUserResponse, 
+// GetAuthUrlRequest, GetAuthUrlResponse, 
+// Oauth2, Oauth2Receiver, 
+// UnauthorizeUserRequest, UnauthorizeUserResponse 
 use wasmcloud_interface_factorial::*;
 use wasmcloud_test_util::{
     check,

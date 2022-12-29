@@ -29,7 +29,6 @@ pub struct AuthUrlBuilder {
     // Basic Client Struct - Client<BasicErrorResponse, BasicTokenResponse, BasicTokenType, BasicTokenIntrospectionResponse, StandardRevocableToken, BasicRevocationErrorResponse>
     // Client Struct - { client_id: ClientId, client_secret: Option<ClientSecret>, auth_url: AuthUrl, auth_type: AuthType, token_url: Option<TokenUrl>, redirect_url: Option<RedirectUrl>, introspection_url: Option<IntrospectionUrl>, revocation_url: Option<RevocationUrl>, device_authorization_url: Option<DeviceAuthorizationUrl>, phantom: PhantomData<(TE, TR, TT, TIR, RT, TRE)>}
     client: Option<oauth2::basic::BasicClient>,
-    // may need another field for device url
     auth_url: Option<(Url, CsrfToken)>,
     pkce: Option<PkceCodeChallenge>,
     pkce_verifier:Option<PkceCodeVerifier>,
@@ -182,7 +181,7 @@ impl AuthUserBuilder {
             scope: None
         }
     }
-    // TODO
+
     async fn compare_csrf_state(){
         todo!();
 
@@ -194,7 +193,7 @@ impl AuthUserBuilder {
     }
 
 
-    // TODO - Only supporting Bearer Tokens
+    // Only supporting Bearer Tokens
     async fn token_exchange(){
         todo!();
 
@@ -207,7 +206,6 @@ impl AuthUserBuilder {
         //     .await?;
     }
 
-    // TODO
     async fn device_token_exchange(){
         todo!();
         // let details: StandardDeviceAuthorizationResponse = client
