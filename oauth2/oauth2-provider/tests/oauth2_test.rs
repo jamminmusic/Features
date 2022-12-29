@@ -40,21 +40,22 @@ async fn health_check(_opt: &TestOptions) -> RpcResult<()> {
 
 /// tests for available grant types with GetAuthorizationUrl method 
 async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
-    todo!()
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn pkce_url_test(_opt: &TestOptions) -> RpcResult<()> {
-    todo!()
+    todo!();
 }
 
 async fn refresh_url_test(_opt: &TestOptions) -> RpcResult<()> {
-    todo!()
+    todo!();
 }
 
 async fn client_credentials_url_test(_opt: &TestOptions) -> RpcResult<()> {
-    todo!()
+    todo!();
 }
 
 async fn device_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
-    todo!()
+    todo!();
 }
