@@ -238,16 +238,3 @@ impl AuthUserBuilder {
         }
     }
 }
-
-
-
-
-
-
-
-// TODO
-//-----------UNIT TESTS-----------------
-#[test]
-fn builder_test() {
-    todo!()
-}

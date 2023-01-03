@@ -21,11 +21,11 @@ sequenceDiagram
         Client ->> ngs: Option(push auth_code, state)
         Oauth2Actor[http/nats] -->> ngs: Option(pull auth_code, state)
         Oauth2Actor[http/nats] -->> AuthCache: get csrf_state
-        Oauth2Actor[http/nats] ->> Oauth2Provider: AuthorizeRequest
+        Oauth2Actor[http/nats] ->> Oauth2Provider: AuthorizeUserRequest
         Oauth2Provider ->> Oauth2Provider: compare state, csrf_state
         Oauth2Provider ->> SocialProvider: auth_code, option(pkce_challenge)
         SocialProvider -->> Oauth2Provider: token exchange
-        Oauth2Provider -->> Oauth2Actor[http/nats]: AuthorizeResponse
+        Oauth2Provider -->> Oauth2Actor[http/nats]: AuthorizeUserResponse
         Oauth2Actor[http/nats] ->> AuthCache: Token, UserID
         Oauth2Actor[http/nats] -->> Client: Authenticated
     end
