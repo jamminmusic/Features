@@ -59,3 +59,47 @@ async fn client_credentials_url_test(_opt: &TestOptions) -> RpcResult<()> {
 async fn device_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
 }
+
+/// tests for available grant types with AuthorizeUser method 
+async fn authorization_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
+}
+
+async fn pkce_auth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
+
+async fn refresh_auth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
+
+async fn client_credentials_auth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
+
+async fn device_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
+
+/// tests for available grant types with UnauthorizeUser method 
+async fn authorization_code_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
+}
+
+async fn pkce_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
+
+async fn refresh_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
+
+async fn client_credentials_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
+
+async fn device_code_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+}
