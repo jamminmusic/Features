@@ -62,8 +62,7 @@ async fn device_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
 
 /// tests for available grant types with AuthorizeUser method 
 async fn authorization_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
-    let prov = test_provider().await;
-    env_logger::try_init().ok();
+    todo!();
 }
 
 async fn pkce_auth_test(_opt: &TestOptions) -> RpcResult<()> {
@@ -84,8 +83,7 @@ async fn device_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
 
 /// tests for available grant types with UnauthorizeUser method 
 async fn authorization_code_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
-    let prov = test_provider().await;
-    env_logger::try_init().ok();
+    todo!();
 }
 
 async fn pkce_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
