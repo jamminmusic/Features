@@ -61,7 +61,7 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
     env_logger::try_init().ok();
 
     // use mock secrets to verify pulling correctly, then pull real secrets below.
-    let secrets = SecretsManager::load("config/secure/test.json", KeySource::File(Path::new("config/secure/spotify.key")))
+    let secrets = SecretsManager::load("config/secure/AuthCode_GetAuthUrl.json", KeySource::File(Path::new("config/secure/AuthCode_GetAuthUrl.json")))
     .expect("Failed to load SecureStore vault!");
 
     let req = GetAuthUrlRequest {
