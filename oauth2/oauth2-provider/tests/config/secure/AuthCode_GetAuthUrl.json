@@ -1,0 +1,46 @@
+{
+  "version": 3,
+  "iv": "lzJVxAQYnAi123JycWEg1A==",
+  "sentinel": {
+    "iv": "Xe04ilL/e1ABL5SUNNwvkw==",
+    "hmac": "t/gUj2pg6iT5GRumzWRvEkxuvxM=",
+    "payload": "6E5Ke15n5VbI6w1hUuL07iSRwF1rU4yqKMib9+xEakmdehDElxeUP5EZqRZpUMHY"
+  },
+  "secrets": {
+    "auth_url:username": {
+      "iv": "E6q9j2IyKWPwgN+TudJ20g==",
+      "hmac": "e1ru5ZfvZhtkJibZ6sqwVKCA8cM=",
+      "payload": "QfFroZnqkd6dEoF8Bxc0r37XKrZnYizuYQAhRL2msh1BzgoThDP4kykZnV4o8OAp"
+    },
+    "client_id:password": {
+      "iv": "9gNM9uzAu2bCi0murBV5gw==",
+      "hmac": "MZ0Loczgqx30YjjpqpJLlPFXb2c=",
+      "payload": "HiAiFWz/c79/J/3gSnK6w7iLoUj3RtrAPYAoSz7od4RDLBiWIK+5NPjRr6gEKgVl"
+    },
+    "client_secret:password": {
+      "iv": "xpLJkm+APNZJHqEwYF5+Bw==",
+      "hmac": "dWu+egiEzGIGjD/xdotJgWk05SY=",
+      "payload": "3A1NZPPRiLcsmJmukDzWu8FsITvETs3/GaiMp7Oi5+U="
+    },
+    "grant_type:username": {
+      "iv": "63W6ypC3mYa9GEZwHss1PQ==",
+      "hmac": "KTwCxyWQwnwW8wnu+7jIeeVU/eI=",
+      "payload": "VdxR/ThION3dEDhfLLUlMyjNua8UIrGQ9E5p5jruzYU="
+    },
+    "redirect_url:username": {
+      "iv": "wJs71AeDmdCLMPH+BWhwGA==",
+      "hmac": "6FetoCyOuzdr4fJZUqord4IpGr4=",
+      "payload": "nb3bMZN6QHpKVJFJXmeUmw6XeO9BTfDCGPPAskRl3R4="
+    },
+    "scope:username": {
+      "iv": "YrnQ1nIaiKN+hIAjfgGBwg==",
+      "hmac": "QKYYdG2yRHnTRWVe1knH6rnpon8=",
+      "payload": "iY0a4pa0DZaEhjwU7no7sCZOuHVW1FjwUktJGIVxK4egQsLaAtrzf3Lte4FS6P0M/b8jDQlzRKgNOoLxNTCalg=="
+    },
+    "token_url:username": {
+      "iv": "TCzyhwqMUNb9mJWNF6js7g==",
+      "hmac": "WCyFvke0Z4zzo+xUE9y9SIp3N6g=",
+      "payload": "XS1lZFp4ZXGmoQxHdONLnl2/huTItvrayiIZvVRWxifQXpcSSHcPA6WQpwGCvlIt"
+    }
+  }
+}

@@ -14,6 +14,11 @@ use wasmcloud_test_util::{
 use wasmcloud_test_util::{run_selected, run_selected_spawn};
 use std::env;
 
+// To reference secrets for tests
+use securestore::{KeySource, SecretsManager};
+use std::path::Path;
+use tempfile::NamedTempFile;
+
 #[tokio::test]
 async fn run_all() {
     let opts = TestOptions::default();
@@ -52,6 +57,30 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
 
     let prov = test_provider().await;
     env_logger::try_init().ok();
+
+    let secrets = SecretsManager::load("config/secure/test.json", KeySource::File(Path::new("config/secure/spotify.key")))
+    .expect("Failed to load SecureStore vault!")
+
+    let req = GetAuthorizationUrlRequest {
+        // required
+        grant_type: "AuthorizationCode",
+        // required + sensitive
+        client_id: Some(secrets.get("client_id:password")?),
+        // sensitive
+        device_code: None,
+        // sensitive
+        client_secret: Some(secrets.get("client_secret:password")?),
+        // required
+        auth_url: Some(secrets.get("auth_url:username")?),
+        // required
+        token_url: Some(secrets.get("token_url:username")?),
+        // no tag
+        redirect_url: Some(secrets.get("redirect_url:username")?),
+        // required
+        scope: Some(secrets.get("scope:username")?),
+        // no tag
+        device_auth_url:  None,
+    };
 }
 
 async fn pkce_url_test(_opt: &TestOptions) -> RpcResult<()> {
