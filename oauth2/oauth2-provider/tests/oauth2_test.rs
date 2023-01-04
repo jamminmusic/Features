@@ -1,4 +1,5 @@
 use wasmbus_rpc::provider::prelude::*;
+use oauth2_provider::Oauth2Provider;
 use oauth2_interface::*;
 // AuthorizeUserRequest, AuthorizeUserResponse, 
 // GetAuthUrlRequest, GetAuthUrlResponse, 
@@ -54,6 +55,7 @@ async fn health_check(_opt: &TestOptions) -> RpcResult<()> {
 async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
     let key = "PROVIDER_TEST_CONFIG";
     env::set_var(key, "./config/authorization_code_test_config.toml");
+    let ctx = wasmbus_rpc::common::Context::default();
 
     let prov = test_provider().await;
     env_logger::try_init().ok();
@@ -74,7 +76,9 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
         device_auth_url:  None,
     };
 
-    println!("{:?}", req);
+    let auth_url = <Oauth2Provider as Oauth2>::get_auth_url(&ctx, &req).await.unwrap();
+
+    println!("{:?}", auth_url);
     Ok(())
 }
 
@@ -82,6 +86,7 @@ async fn pkce_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/pkce_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -91,6 +96,7 @@ async fn refresh_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/refresh_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -100,6 +106,7 @@ async fn client_credentials_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/client_credentials_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -109,6 +116,7 @@ async fn device_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/device_code_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -119,6 +127,7 @@ async fn authorization_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/authorization_code_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -128,6 +137,7 @@ async fn pkce_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/pkce_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -137,6 +147,7 @@ async fn refresh_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/refresh_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -146,6 +157,7 @@ async fn client_credentials_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/client_credentials_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -155,6 +167,7 @@ async fn device_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/device_code_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -165,6 +178,7 @@ async fn authorization_code_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/authorization_code_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -174,6 +188,7 @@ async fn pkce_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/pkce_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -183,6 +198,7 @@ async fn refresh_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/refresh_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -192,6 +208,7 @@ async fn client_credentials_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/client_credentials_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -201,6 +218,7 @@ async fn device_code_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/device_code_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
@@ -211,6 +229,7 @@ async fn case_insensitive_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
     // let key = "PROVIDER_TEST_CONFIG";
     // env::set_var(key, "./config/case_insensitive_test_config.toml");
+    // let ctx = wasmbus_rpc::common::Context::default();
 
     // let prov = test_provider().await;
     // env_logger::try_init().ok();
