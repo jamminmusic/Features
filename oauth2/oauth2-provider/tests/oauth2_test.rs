@@ -51,7 +51,7 @@ async fn health_check(_opt: &TestOptions) -> RpcResult<()> {
 
 /// tests for available grant types with GetAuthorizationUrl method 
 // test provider should load values from config as per https://github.com/wasmCloud/wasmcloud-test/blob/main/wasmcloud-test-util/src/provider_test.rs#L496
-async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
+async fn authorization_code_url_test(_opt: &TestOptions) -> Result<(), securestore::Error>{
     let key = "PROVIDER_TEST_CONFIG";
     env::set_var(key, "./config/authorization_code_test_config.toml");
 
