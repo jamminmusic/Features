@@ -47,7 +47,6 @@ impl AuthUrlBuilder {
         AuthUrlBuilder {
             client: None,
             auth_url: None,
-            redirect_url: None,
             pkce: None,
             pkce_verifier: None,
             success: false,
@@ -67,7 +66,7 @@ impl AuthUrlBuilder {
 
     pub fn set_redirect_url(mut self, req: &GetAuthUrlRequest) -> Self {
         self.client = Some(self.client.unwrap().set_redirect_uri(
-                    RedirectUrl::new(req.redirect_url.to_string()).expect("Invalid redirect URL")));
+                    RedirectUrl::new(req.redirect_url.to_owned().unwrap()).expect("Invalid redirect URL")));
         self    
     }
 
