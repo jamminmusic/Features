@@ -135,7 +135,7 @@ impl AuthUrlBuilder {
         GetAuthUrlResponse { 
             success: self.success, error: self.error,
             // need to create a smithy model for CsrfToken, or create one as a string - https://docs.rs/oauth2/latest/oauth2/struct.CsrfToken.html#method.secret
-            url: Some(self.auth_url.to_owned().unwrap().0.to_string()), csrf_state: self.auth_url.to_owned().unwrap().1.secret().to_string(),
+            url: Some(self.auth_url.to_owned().unwrap().0.to_string()), csrf_state: self.auth_url.unwrap().1.secret().to_string(),
             device_url: None, device_code: None, device_code_expire: None
         }
     }

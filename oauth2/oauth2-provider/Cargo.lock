@@ -1300,7 +1300,6 @@ dependencies = [
  "securestore",
  "serde",
  "strum",
- "tempfile",
  "tokio",
  "url",
  "wasmbus-rpc",

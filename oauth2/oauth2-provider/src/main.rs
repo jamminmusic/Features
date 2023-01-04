@@ -39,21 +39,21 @@ pub enum GrantType {
 }
 
 impl GrantType {
-    pub async fn get_auth_url(&self, req: &GetAuthUrlRequest) -> Result<GetAuthUrlResponse, Error>{
+    pub async fn get_auth_url(&self, _req: &GetAuthUrlRequest) -> Result<GetAuthUrlResponse, Error>{
         let auth_url_response = match self {
             // User Flow - User interaction with auth_url needed.
             //Just remove PKCE code from https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
-            GrantType::AuthorizationCode => AuthUrlBuilder::new().create_client(req).set_redirect_url(req).generate_auth_url(req).build(),
+            GrantType::AuthorizationCode => AuthUrlBuilder::new().create_client(_req).set_redirect_url(_req).generate_auth_url(_req).build(),
             // User Flow + Pkce - User interaction with auth_url needed and will contain code challenge. Most secure User Flow.
             // https://docs.rs/oauth2/4.3.0/oauth2/#getting-started-authorization-code-grant-w-pkce
-            GrantType::Pkce => AuthUrlBuilder::new().create_client(req).set_redirect_url(req).generate_pkce().generate_auth_url_pkce(req).build(),
+            GrantType::Pkce => AuthUrlBuilder::new().create_client(_req).set_redirect_url(_req).generate_pkce().generate_auth_url_pkce(_req).build(),
             // Refresh Flow - If client was issued a secret User interaction with auth_url needed, otherwise User interaction with auth_url not needed. 
             // https://docs.rs/oauth2/4.3.0/oauth2/trait.TokenResponse.html#tymethod.refresh_token
-            GrantType::Refresh => AuthUrlBuilder::new().create_client(req).generate_auth_url(req).build(),
+            GrantType::Refresh => AuthUrlBuilder::new().create_client(_req).generate_auth_url(_req).build(),
             // Application Flow - User interaction with auth_url not needed. Application as a client will pass client_id and secret for authentication.
             // https://docs.rs/oauth2/4.3.0/oauth2/#client-credentials-grant
             // client_secret is an option when creating the Client, therefore we can handle whether a user needs to interact outside of URL generation.
-            GrantType::ClientCredentials => AuthUrlBuilder::new().create_client(req).generate_auth_url(req).build(),
+            GrantType::ClientCredentials => AuthUrlBuilder::new().create_client(_req).generate_auth_url(_req).build(),
             // Device Flow - User interaction with auth_url needed - authenticate on browserless or input-constrained devices.
             // https://docs.rs/oauth2/4.3.0/oauth2/#device-code-flow
             GrantType::DeviceCode => todo!(), // AuthUrlBuilder::new().create_client(req).set_device_url(req).generate_device_auth_url().build(),
@@ -61,7 +61,7 @@ impl GrantType {
         Ok(auth_url_response)
     }
 
-    pub async fn authorize_user(&self, req: &AuthorizeUserRequest) -> Result<AuthorizeUserResponse, Error> {
+    pub async fn authorize_user(&self, _req: &AuthorizeUserRequest) -> Result<AuthorizeUserResponse, Error> {
         todo!();
 
         // let authorize_user_response = match self {
@@ -79,7 +79,7 @@ impl GrantType {
         // Ok(AuthorizeUserResponse)
     }
 
-    pub async fn unauthorize_user(&self, req: &UnauthorizeUserRequest) -> Result<UnauthorizeUserResponse, Error> {
+    pub async fn unauthorize_user(&self, _req: &UnauthorizeUserRequest) -> Result<UnauthorizeUserResponse, Error> {
         todo!();
 
         // let unauthorize_user_response = match self {
@@ -118,7 +118,7 @@ impl Oauth2 for Oauth2Provider {
         // Request Struct - { grant_type: String, client_id: String, device_code: String, client_secret: String, 
         //                    auth_url: String, token_url: String, redirect_url: String, scope: String, device_auth_url: String }
         // Response Struct - { success: Boolean, error: String, url: String, csrf_state: String, device_url: String, device_code: String, device_code_expire: U64 }
-        let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_url(&_req).await.unwrap();
+        let response = GrantType::from_str(&_req.grant_type).expect("Grant type not found").get_auth_url(_req).await.unwrap();
         Ok(response)
     }
 

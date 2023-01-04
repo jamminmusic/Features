@@ -17,7 +17,6 @@ use std::env;
 // To reference secrets for tests
 use securestore::{KeySource, SecretsManager};
 use std::path::Path;
-use tempfile::NamedTempFile;
 
 #[tokio::test]
 async fn run_all() {
@@ -26,7 +25,8 @@ async fn run_all() {
         &opts, health_check, 
         authorization_code_url_test, pkce_url_test, refresh_url_test, client_credentials_url_test, device_code_url_test,
         authorization_code_auth_test, pkce_auth_test, refresh_auth_test, client_credentials_auth_test, device_code_auth_test,
-        authorization_code_unauth_test, pkce_unauth_test, refresh_unauth_test, client_credentials_unauth_test, device_code_unauth_test
+        authorization_code_unauth_test, pkce_unauth_test, refresh_unauth_test, client_credentials_unauth_test, device_code_unauth_test,
+        case_insensitive_test,
     );
     print_test_results(&res);
 
@@ -58,31 +58,23 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
     let prov = test_provider().await;
     env_logger::try_init().ok();
 
+    // use mock secrets to verify pulling correctly, then pull real secrets below.
     let secrets = SecretsManager::load("config/secure/test.json", KeySource::File(Path::new("config/secure/spotify.key")))
     .expect("Failed to load SecureStore vault!");
 
     let req = GetAuthUrlRequest {
-        // required
-        grant_type: "AuthorizationCode",
-        // required + sensitive
-        client_id: Some(secrets.get("client_id:password").expect("secure store error")).unwrap(),
-        // sensitive
+        grant_type: "AuthorizationCode".to_string(),
+        client_id: secrets.get("client_id:password").expect("secure store error"),
         device_code: None,
-        // sensitive
-        client_secret: Some(secrets.get("client_secret:password").expect("secure store error")).unwrap(),
-        // required
-        auth_url: Some(secrets.get("auth_url:username").expect("secure store error")).unwrap(),
-        // required
-        token_url: Some(secrets.get("token_url:username").expect("secure store error")).unwrap(),
-        // no tag
-        redirect_url: Some(secrets.get("redirect_url:username").expect("secure store error")).unwrap(),
-        // required
-        scope: Some(secrets.get("scope:username").expect("secure store error")).unwrap(),
-        // no tag
+        client_secret: Some(secrets.get("client_secret:password").expect("secure store error")),
+        auth_url: secrets.get("auth_url:username").expect("secure store error"),
+        token_url: secrets.get("token_url:username").expect("secure store error"),
+        redirect_url: Some(secrets.get("redirect_url:username").expect("secure store error")),
+        scope: secrets.get("scope:username").expect("secure store error"),
         device_auth_url:  None,
     };
 
-    println!("{}", req);
+    println!("{:?}", req);
     Ok(())
 }
 

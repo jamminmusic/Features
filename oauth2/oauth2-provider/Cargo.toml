@@ -21,7 +21,6 @@ wasmcloud-test-util = "0.6.4"
 tokio = { version = "1", features = ["full"] }
 securestore = "0.100.0"
 env_logger = "0.10.0"
-tempfile = "3.3.0"
 
 [[bin]]
 name = "oauth2-provider"
