@@ -12,6 +12,7 @@ use wasmcloud_test_util::{
 };
 #[allow(unused_imports)]
 use wasmcloud_test_util::{run_selected, run_selected_spawn};
+use std::env;
 
 #[tokio::test]
 async fn run_all() {
@@ -44,11 +45,10 @@ async fn health_check(_opt: &TestOptions) -> RpcResult<()> {
 }
 
 /// tests for available grant types with GetAuthorizationUrl method 
+// test provider should load values from config as per https://github.com/wasmCloud/wasmcloud-test/blob/main/wasmcloud-test-util/src/provider_test.rs#L496
 async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
-    // test provider should load values from config as per https://github.com/wasmCloud/wasmcloud-test/blob/main/wasmcloud-test-util/src/provider_test.rs#L496
-
-    // set env variable: PROVIDER_TEST_CONFIG to the location of the toml file containing provider config data.
-    // SET ENV HERE
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/authorization_code_test_config.toml");
 
     let prov = test_provider().await;
     env_logger::try_init().ok();
@@ -56,58 +56,138 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
 
 async fn pkce_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/pkce_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn refresh_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/refresh_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn client_credentials_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/client_credentials_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn device_code_url_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/device_code_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 /// tests for available grant types with AuthorizeUser method 
 async fn authorization_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/authorization_code_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn pkce_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/pkce_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn refresh_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/refresh_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn client_credentials_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/client_credentials_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn device_code_auth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/device_code_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 /// tests for available grant types with UnauthorizeUser method 
 async fn authorization_code_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/authorization_code_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn pkce_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/pkce_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn refresh_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/refresh_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn client_credentials_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/client_credentials_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
 
 async fn device_code_unauth_test(_opt: &TestOptions) -> RpcResult<()> {
     todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/device_code_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
+}
+
+// test case insensitive grant type value.
+async fn case_insensitive_test(_opt: &TestOptions) -> RpcResult<()> {
+    todo!();
+    let key = "PROVIDER_TEST_CONFIG";
+    env::set_var(key, "./config/case_insensitive_test_config.toml");
+
+    let prov = test_provider().await;
+    env_logger::try_init().ok();
 }
