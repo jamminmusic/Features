@@ -17,7 +17,7 @@ rust_backtrace = "1"
 #lattice_rpc_prefix = "default"
 
 # link name (default: "default")
-link_name = "refresh"
+link_name = "spotify"
 
 # name of contract under test
 contract_id = "jammin:interfaces:oauth2"
