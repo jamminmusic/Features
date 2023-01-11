@@ -74,9 +74,8 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
         device_auth_url:  None,
     };
 
-    
-    
-    let auth_url = Oauth2::authorize_user(&ctx, &req).await.unwrap();
+    let oauth2: Oauth2 = Default::default();
+    let auth_url = oauth2.authorize_user(self, &ctx, &req).await.unwrap();
 
     println!("{:?}", auth_url);
     Ok(())
