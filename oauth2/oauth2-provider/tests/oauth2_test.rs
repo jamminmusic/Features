@@ -75,7 +75,22 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
     };
 
     let oauth2: Oauth2 = Default::default();
-    let auth_url = oauth2.authorize_user(self, &ctx, &req).await.unwrap();
+    let auth_url = oauth2.get_auth_url(&ctx, &req).await.unwrap();
+    let mock_expire: u64 = 5;
+    let expected_res = GetAuthUrlResponse {
+        success: true,
+        error: None,
+        url: Some("String".to_string()),
+        csrf_state: "String".to_string(),
+        device_url: Some("String".to_string()),
+        device_code: Some("String".to_string()),
+        device_code_expire: Some(mock_expire),
+      };
+
+    assert_eq!(
+        auth_url,
+        expected_res
+    );
 
     println!("{:?}", auth_url);
     Ok(())

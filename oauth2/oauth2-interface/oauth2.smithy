@@ -80,7 +80,7 @@ structure GetAuthUrlResponse {
   @required
   success: Boolean
 
-   @n(1)
+  @n(1)
   error: String
 
   @n(2)
