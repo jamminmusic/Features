@@ -18,6 +18,8 @@ use std::env;
 use securestore::{KeySource, SecretsManager};
 use std::path::Path;
 
+use crate::Oauth2Provider;
+
 #[tokio::test]
 async fn run_all() {
     let opts = TestOptions::default();
@@ -74,9 +76,10 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
         device_auth_url:  None,
     };
 
-    let oauth2: Oauth2 = Default::default();
+    let oauth2: Oauth2Provider = Oauth2Provider::default();
     let auth_url = oauth2.get_auth_url(&ctx, &req).await.unwrap();
     let mock_expire: u64 = 5;
+
     let expected_res = GetAuthUrlResponse {
         success: true,
         error: None,
