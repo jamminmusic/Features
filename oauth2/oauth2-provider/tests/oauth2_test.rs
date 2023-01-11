@@ -1,5 +1,4 @@
 use wasmbus_rpc::provider::prelude::*;
-use oauth2_provider::Oauth2Provider;
 use oauth2_interface::*;
 // AuthorizeUserRequest, AuthorizeUserResponse, 
 // GetAuthUrlRequest, GetAuthUrlResponse, 
@@ -60,7 +59,6 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
     let prov = test_provider().await;
     env_logger::try_init().ok();
 
-    // use mock secrets to verify pulling correctly, then pull real secrets below.
     let secrets = SecretsManager::load("config/secure/authcode_getauthurl.json", KeySource::File(Path::new("config/secure/authcode_getauthurl.json")))
     .expect("Failed to load SecureStore vault!");
 
@@ -76,7 +74,9 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
         device_auth_url:  None,
     };
 
-    let auth_url = <Oauth2Provider as Oauth2>::get_auth_url(&ctx, &req).await.unwrap();
+    
+    
+    let auth_url = Oauth2::authorize_user(&ctx, &req).await.unwrap();
 
     println!("{:?}", auth_url);
     Ok(())
