@@ -57,7 +57,7 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
     let prov = test_provider().await;
     env_logger::try_init().ok();
 
-    let secrets = SecretsManager::load("config/secure/authcode_getauthurl.json", KeySource::File(Path::new("config/secure/authcode_getauthurl.json")))
+    let secrets = SecretsManager::load("tests/config/secure/authcode_getauthurl.json", KeySource::File(Path::new("tests/config/secure/authcode_getauthurl.key")))
     .expect("Failed to load SecureStore vault!");
 
     let req = GetAuthUrlRequest {

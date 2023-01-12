@@ -1,7 +1,6 @@
 #[allow(unused_imports)]
 mod methods;
 
-use anyhow;
 use anyhow::Error;
 use oauth2_interface::*;
 use serde::Deserialize;
