@@ -18,7 +18,7 @@ use std::env;
 use securestore::{KeySource, SecretsManager};
 use std::path::Path;
 
-
+// Note this useful idiom: importing names from outer (for mod tests) scope.
 #[tokio::test]
 async fn run_all() {
     let opts = TestOptions::default();
