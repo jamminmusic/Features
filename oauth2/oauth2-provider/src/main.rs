@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// Oauth2 capability provider implementation
 #[derive(Default, Clone, Provider)]
 #[services(Oauth2)]
-pub(crate) struct Oauth2Provider {}
+pub struct Oauth2Provider {}
 
 /// use default implementations of provider message handlers
 impl ProviderDispatch for Oauth2Provider {}

@@ -18,7 +18,6 @@ use std::env;
 use securestore::{KeySource, SecretsManager};
 use std::path::Path;
 
-use crate::Oauth2Provider;
 
 #[tokio::test]
 async fn run_all() {
@@ -88,7 +87,7 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
         device_url: Some("String".to_string()),
         device_code: Some("String".to_string()),
         device_code_expire: Some(mock_expire),
-      };
+    };
 
     assert_eq!(
         auth_url,
