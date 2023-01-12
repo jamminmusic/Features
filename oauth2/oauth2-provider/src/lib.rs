@@ -7,7 +7,7 @@ use serde::Deserialize;
 use wasmbus_rpc::provider::prelude::*;
 use strum::EnumString;
 use std::str::FromStr;
-use crate::methods::url::AuthUrlBuilder;
+use crate::methods::get_url::AuthUrlBuilder;
 
 /// Oauth2 capability provider implementation
 #[derive(Default, Clone, Provider)]
