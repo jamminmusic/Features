@@ -1,9 +1,6 @@
 use wasmbus_rpc::provider::prelude::*;
 use oauth2_interface::*;
-// AuthorizeUserRequest, AuthorizeUserResponse, 
-// GetAuthUrlRequest, GetAuthUrlResponse, 
-// Oauth2, Oauth2Receiver, 
-// UnauthorizeUserRequest, UnauthorizeUserResponse 
+use oauth2_provider::Oauth2Provider;
 use wasmcloud_test_util::{
     check,
     cli::print_test_results,
@@ -33,7 +30,7 @@ async fn run_all() {
 
     let passed = res.iter().filter(|tr| tr.passed).count();
     let total = res.len();
-    assert_eq!(passed, total, "{} passed out of {}", passed, total);
+    assert_eq!(passed, total, "{passed} passed out of {total}");
 
     // try to let the provider shut dowwn gracefully
     let provider = test_provider().await;
@@ -94,7 +91,7 @@ async fn authorization_code_url_test(_opt: &TestOptions) -> RpcResult<()>{
         expected_res
     );
 
-    println!("{:?}", auth_url);
+    println!("{auth_url:?}");
     Ok(())
 }
 
